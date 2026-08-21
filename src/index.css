@@ -1,0 +1,97 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
+
+:root {
+  /* Font */
+  --font-main: 'Inter', sans-serif;
+
+  /* Kente Palette */
+  --kente-gold: #FFB800;
+  --kente-green: #007D40;
+  --kente-red: #D22B2B;
+  --kente-black: #111111;
+
+  /* Default (Light Mode) */
+  --bg-primary: #FFFFFF;
+  --bg-secondary: #F3F3F3;
+  --bg-card: #FFFFFF;
+  
+  --text-primary: #111111;
+  --text-secondary: #5E5E5E;
+  
+  --border-color: #E2E2E2;
+  
+  /* Brand Accent */
+  --accent-color: var(--kente-green);
+  --accent-hover: #005F30;
+
+  /* Shadows */
+  --shadow-sm: 0 1px 3px rgba(0,0,0,0.05);
+  --shadow-md: 0 4px 12px rgba(0,0,0,0.05);
+}
+
+[data-theme="dark"] {
+  /* Dark Mode (StockX Inspired) */
+  --bg-primary: #0F0F0F;
+  --bg-secondary: #1A1A1A;
+  --bg-card: #141414;
+  
+  --text-primary: #FFFFFF;
+  --text-secondary: #A3A3A3;
+  
+  --border-color: #2D2D2D;
+  
+  /* Brand Accent */
+  --accent-color: #00B159;
+  --accent-hover: #00DB6E;
+
+  /* Shadows */
+  --shadow-sm: 0 1px 3px rgba(0,0,0,0.3);
+  --shadow-md: 0 4px 12px rgba(0,0,0,0.4);
+}
+
+/* Base Styles */
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: var(--font-main);
+  background-color: var(--bg-primary);
+  color: var(--text-primary);
+  line-height: 1.5;
+  transition: background-color 0.3s ease, color 0.3s ease;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+button {
+  font-family: var(--font-main);
+  cursor: pointer;
+  border: none;
+  background: none;
+}
+
+/* Utilities */
+.container {
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 0 16px;
+}
+
+.kente-trim {
+  height: 4px;
+  width: 100%;
+  background: linear-gradient(90deg, 
+    var(--kente-red) 0%, var(--kente-red) 25%, 
+    var(--kente-gold) 25%, var(--kente-gold) 50%, 
+    var(--kente-green) 50%, var(--kente-green) 75%, 
+    var(--kente-black) 75%, var(--kente-black) 100%);
+  background-size: 40px 100%;
+}

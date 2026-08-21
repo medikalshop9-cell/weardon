@@ -1,0 +1,100 @@
+/* ========================
+   BRAND GRID STYLES
+   ======================== */
+
+.brand-grid-section {
+  padding: 36px 0;
+}
+
+.brand-grid-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.brand-grid-title {
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+.brand-grid-see-all {
+  font-size: 0.8125rem;
+  font-weight: 600;
+  color: var(--accent-color);
+  transition: opacity 0.2s;
+}
+
+.brand-grid-see-all:hover {
+  opacity: 0.8;
+}
+
+.brand-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 16px;
+}
+
+/* Card */
+.brand-card {
+  position: relative;
+  border-radius: 12px;
+  overflow: hidden;
+  padding: 28px 20px;
+  height: 160px;
+  display: flex;
+  align-items: flex-end;
+  transition: transform 0.25s ease, box-shadow 0.25s ease;
+}
+
+.brand-card:hover {
+  transform: translateY(-4px);
+  box-shadow: var(--shadow-md);
+}
+
+.brand-card-content {
+  position: relative;
+  z-index: 2;
+}
+
+.brand-card-icon {
+  font-size: 2rem;
+  display: block;
+  margin-bottom: 8px;
+}
+
+.brand-card-name {
+  font-size: 1rem;
+  font-weight: 700;
+  color: #ffffff;
+}
+
+/* Accent stripe */
+.brand-card-accent {
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 6px;
+  height: 100%;
+  opacity: 0.8;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .brand-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .brand-card {
+    height: 130px;
+    padding: 20px 16px;
+  }
+}
+
+@media (max-width: 480px) {
+  .brand-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 10px;
+  }
+}

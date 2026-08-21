@@ -1,0 +1,111 @@
+/* ========================
+   PRODUCT CAROUSEL STYLES
+   ======================== */
+
+.product-carousel {
+  padding: 36px 0;
+}
+
+.product-carousel-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.product-carousel-title {
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+.product-carousel-see-all {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 0.8125rem;
+  font-weight: 600;
+  color: var(--accent-color);
+  transition: opacity 0.2s;
+}
+
+.product-carousel-see-all:hover {
+  opacity: 0.8;
+}
+
+/* Wrapper */
+.product-carousel-wrapper {
+  position: relative;
+}
+
+/* Track */
+.product-carousel-track {
+  overflow-x: auto;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+.product-carousel-track::-webkit-scrollbar {
+  display: none;
+}
+
+.product-carousel-items {
+  display: flex;
+  gap: 16px;
+  padding-bottom: 4px;
+}
+
+.product-carousel-item {
+  flex: 0 0 220px;
+  min-width: 220px;
+}
+
+/* Nav Arrows */
+.carousel-nav {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 5;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background-color: var(--bg-card);
+  border: 1px solid var(--border-color);
+  color: var(--text-primary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  transition: opacity 0.2s, background-color 0.2s;
+  box-shadow: var(--shadow-md);
+}
+
+.product-carousel-wrapper:hover .carousel-nav {
+  opacity: 1;
+}
+
+.carousel-nav:hover {
+  background-color: var(--accent-color);
+  color: #fff;
+  border-color: var(--accent-color);
+}
+
+.carousel-nav-left {
+  left: 8px;
+}
+
+.carousel-nav-right {
+  right: 8px;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .product-carousel-item {
+    flex: 0 0 180px;
+    min-width: 180px;
+  }
+
+  .carousel-nav {
+    display: none;
+  }
+}
