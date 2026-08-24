@@ -1,0 +1,92 @@
+import { db } from './config';
+import { 
+  collection, 
+  getDocs, 
+  getDoc,
+  doc, 
+  addDoc, 
+  updateDoc, 
+  deleteDoc,
+  query,
+  orderBy
+} from 'firebase/firestore';
+
+// ========================
+// CATEGORIES
+// ========================
+export const getCategories = async () => {
+  const q = query(collection(db, 'categories'), orderBy('name'));
+  const querySnapshot = await getDocs(q);
+  return querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+};
+
+export const addCategory = async (categoryData) => {
+  return await addDoc(collection(db, 'categories'), {
+    ...categoryData,
+    createdAt: new Date().toISOString()
+  });
+};
+
+export const updateCategory = async (id, categoryData) => {
+  const docRef = doc(db, 'categories', id);
+  return await updateDoc(docRef, {
+    ...categoryData,
+    updatedAt: new Date().toISOString()
+  });
+};
+
+export const deleteCategory = async (id) => {
+  const docRef = doc(db, 'categories', id);
+  return await deleteDoc(docRef);
+};
+
+
+// ========================
+// PRODUCTS
+// ========================
+export const getProducts = async () => {
+  const q = query(collection(db, 'products'), orderBy('createdAt', 'desc'));
+  const querySnapshot = await getDocs(q);
+  return querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+};
+
+export const addProduct = async (productData) => {
+  return await addDoc(collection(db, 'products'), {
+    ...productData,
+    createdAt: new Date().toISOString()
+  });
+};
+
+export const updateProduct = async (id, productData) => {
+  const docRef = doc(db, 'products', id);
+  return await updateDoc(docRef, {
+    ...productData,
+    updatedAt: new Date().toISOString()
+  });
+};
+
+export const deleteProduct = async (id) => {
+  const docRef = doc(db, 'products', id);
+  return await deleteDoc(docRef);
+};
+
+// ========================
+// BANNERS
+// ========================
+export const getBanners = async () => {
+  const q = query(collection(db, 'banners'), orderBy('createdAt', 'desc'));
+  const querySnapshot = await getDocs(q);
+  return querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+};
+
+export const addBanner = async (bannerData) => {
+  return await addDoc(collection(db, 'banners'), {
+    ...bannerData,
+    createdAt: new Date().toISOString()
+  });
+};
+
+export const deleteBanner = async (id) => {
+  const docRef = doc(db, 'banners', id);
+  return await deleteDoc(docRef);
+};

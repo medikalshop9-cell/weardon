@@ -1,0 +1,165 @@
+.user-dropdown-container {
+  position: absolute;
+  top: 100%;
+  right: 0;
+  margin-top: 10px;
+  width: 280px;
+  background: rgba(20, 20, 20, 0.85);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 12px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+  padding: 16px;
+  z-index: 1000;
+  animation: slideDown 0.2s ease-out forwards;
+}
+
+@keyframes slideDown {
+  from { opacity: 0; transform: translateY(-10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.user-dropdown-content h4 {
+  margin-bottom: 12px;
+  color: #fff;
+  font-size: 14px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.user-input {
+  width: 100%;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 6px;
+  padding: 10px;
+  color: white;
+  margin-bottom: 10px;
+  font-size: 14px;
+  transition: all 0.2s ease;
+}
+
+.user-input:focus {
+  outline: none;
+  border-color: #8b5cf6;
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.user-submit-btn {
+  width: 100%;
+  background: #8b5cf6;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  padding: 10px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s ease;
+}
+
+.user-submit-btn:hover:not(:disabled) {
+  background: #7c3aed;
+}
+
+.user-submit-btn:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+}
+
+.user-error {
+  color: #ef4444;
+  font-size: 12px;
+  margin-bottom: 10px;
+  text-align: center;
+}
+
+.user-mode-toggles {
+  margin-top: 16px;
+  text-align: center;
+  font-size: 12px;
+  color: var(--text-secondary);
+}
+
+.user-mode-toggles p {
+  margin-bottom: 8px;
+}
+
+.user-mode-toggles button {
+  background: none;
+  border: none;
+  color: #8b5cf6;
+  cursor: pointer;
+  font-weight: 500;
+}
+
+.user-mode-toggles button:hover {
+  text-decoration: underline;
+}
+
+.user-mode-toggles .admin-toggle {
+  color: var(--text-secondary);
+  opacity: 0.6;
+  font-size: 11px;
+}
+
+.user-mode-toggles .admin-toggle:hover {
+  opacity: 1;
+}
+
+/* Logged In State */
+.user-info {
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 16px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.user-info span {
+  font-weight: 600;
+  color: #8b5cf6;
+  font-size: 14px;
+}
+
+.user-info small {
+  color: rgba(255, 255, 255, 0.6);
+  font-size: 12px;
+  margin-top: 2px;
+}
+
+.user-nav-btn {
+  width: 100%;
+  background: rgba(255, 255, 255, 0.05);
+  color: white;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 6px;
+  padding: 10px;
+  margin-bottom: 8px;
+  font-size: 14px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  text-align: left;
+}
+
+.user-nav-btn:hover {
+  background: rgba(255, 255, 255, 0.1);
+  border-color: rgba(255, 255, 255, 0.2);
+}
+
+.user-logout-btn {
+  width: 100%;
+  background: transparent;
+  color: #ef4444;
+  border: 1px solid rgba(239, 68, 68, 0.3);
+  border-radius: 6px;
+  padding: 10px;
+  font-size: 14px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  margin-top: 8px;
+}
+
+.user-logout-btn:hover {
+  background: rgba(239, 68, 68, 0.1);
+}

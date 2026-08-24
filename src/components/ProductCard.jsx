@@ -17,10 +17,17 @@ function ProductCard({ product }) {
     <div className="product-card" id={`product-card-${product.id}`}>
       <Link to={`/product/${product.id}`} className="product-card-image-link">
         <div className="product-card-image" style={gradientStyle}>
-          {/* Product image placeholder — shows initials */}
-          <span className="product-card-placeholder-text">
-            {product.name.split(' ').slice(1, 3).map(w => w[0]).join('')}
-          </span>
+          {product.image ? (
+            <img 
+              src={product.image} 
+              alt={product.name} 
+              style={{ width: '100%', height: '100%', objectFit: 'cover' }} 
+            />
+          ) : (
+            <span className="product-card-placeholder-text">
+              {product.name.split(' ').slice(1, 3).map(w => w[0]).join('')}
+            </span>
+          )}
           {product.isNew && <span className="product-badge badge-new">New</span>}
           {product.trending && <span className="product-badge badge-trending">🔥</span>}
         </div>

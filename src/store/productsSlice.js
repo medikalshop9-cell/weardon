@@ -1,14 +1,24 @@
-import { createSlice } from '@reduxjs/toolkit';
-import { products as mockProducts } from '../data/products';
+import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
+import { getProducts as fetchProductsFromFirestore } from '../firebase/firestore';
+
+export const fetchProducts = createAsyncThunk(
+  'products/fetchProducts',
+  async () => {
+    const products = await fetchProductsFromFirestore();
+    return products;
+  }
+);
 
 const productsSlice = createSlice({
   name: 'products',
   initialState: {
-    items: mockProducts,
-    filteredItems: mockProducts,
+    items: [],
+    filteredItems: [],
     activeCategory: 'all',
     searchQuery: '',
     sortBy: 'default',
+    status: 'idle', // 'idle' | 'loading' | 'succeeded' | 'failed'
+    error: null
   },
   reducers: {
     setCategory(state, action) {
@@ -24,6 +34,21 @@ const productsSlice = createSlice({
       state.filteredItems = applyFilters(state);
     },
   },
+  extraReducers: (builder) => {
+    builder
+      .addCase(fetchProducts.pending, (state) => {
+        state.status = 'loading';
+      })
+      .addCase(fetchProducts.fulfilled, (state, action) => {
+        state.status = 'succeeded';
+        state.items = action.payload;
+        state.filteredItems = applyFilters({ ...state, items: action.payload });
+      })
+      .addCase(fetchProducts.rejected, (state, action) => {
+        state.status = 'failed';
+        state.error = action.error.message;
+      });
+  }
 });
 
 function applyFilters(state) {
@@ -53,7 +78,7 @@ function applyFilters(state) {
       result.sort((a, b) => b.price - a.price);
       break;
     case 'popular':
-      result.sort((a, b) => b.soldCount - a.soldCount);
+      result.sort((a, b) => (b.soldCount || 0) - (a.soldCount || 0));
       break;
     case 'newest':
       result = result.filter(p => p.isNew).concat(result.filter(p => !p.isNew));

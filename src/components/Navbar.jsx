@@ -1,16 +1,22 @@
 import { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
 import { FiSearch, FiHeart, FiShoppingBag, FiUser, FiMenu, FiX, FiSun, FiMoon } from 'react-icons/fi';
 import { setSearchQuery } from '../store/productsSlice';
 import { toggleCart, selectCartCount } from '../store/cartSlice';
+import { SpotlightNavbar } from './ui/spotlight-navbar';
+import UserDropdown from './UserDropdown';
 import './Navbar.css';
 
 function Navbar({ theme, toggleTheme }) {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [searchOpen, setSearchOpen] = useState(false);
+  const [userDropdownOpen, setUserDropdownOpen] = useState(false);
   const dispatch = useDispatch();
   const cartCount = useSelector(selectCartCount);
+  const { user, isAdmin } = useSelector((state) => state.auth);
+  const location = useLocation();
+  const navigate = useNavigate();
 
   const handleSearch = (e) => {
     dispatch(setSearchQuery(e.target.value));
@@ -25,6 +31,14 @@ function Navbar({ theme, toggleTheme }) {
     { label: 'Flip-Flops', to: '/?category=flip-flops' },
     { label: 'Luxury', to: '/?category=luxury' },
   ];
+
+  const spotlightItems = navLinks.map(link => ({
+    label: link.label,
+    href: link.to
+  }));
+
+  const currentPath = location.pathname + location.search;
+  const activeIndex = Math.max(0, spotlightItems.findIndex(item => item.href === currentPath));
 
   return (
     <nav className="navbar" id="main-navbar">
@@ -102,9 +116,22 @@ function Navbar({ theme, toggleTheme }) {
               <FiShoppingBag size={20} />
               {cartCount > 0 && <span className="cart-badge">{cartCount}</span>}
             </button>
-            <Link to="/" className="navbar-action-btn" aria-label="Account" id="account-btn">
-              <FiUser size={20} />
-            </Link>
+            
+            <div style={{ position: 'relative' }}>
+              <button 
+                className="navbar-action-btn" 
+                aria-label="Account" 
+                id="account-btn"
+                onClick={() => setUserDropdownOpen(!userDropdownOpen)}
+                style={{ color: user ? (isAdmin ? '#8b5cf6' : '#10b981') : 'inherit' }}
+              >
+                <FiUser size={20} />
+              </button>
+              <UserDropdown 
+                isOpen={userDropdownOpen} 
+                onClose={() => setUserDropdownOpen(false)} 
+              />
+            </div>
           </div>
         </div>
       </div>
@@ -130,16 +157,12 @@ function Navbar({ theme, toggleTheme }) {
 
       {/* Category Nav */}
       <div className="navbar-categories">
-        <div className="navbar-categories-inner container">
-          {navLinks.map(link => (
-            <Link
-              key={link.label}
-              to={link.to}
-              className={`navbar-category-link ${link.label === 'Trending' ? 'highlight' : ''}`}
-            >
-              {link.label}
-            </Link>
-          ))}
+        <div className="container" style={{ padding: '8px 0', display: 'flex', justifyContent: 'center' }}>
+          <SpotlightNavbar
+            items={spotlightItems}
+            defaultActiveIndex={activeIndex}
+            onItemClick={(item) => navigate(item.href)}
+          />
         </div>
       </div>
 

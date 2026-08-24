@@ -58,10 +58,18 @@ function ProductDetail() {
       <div className="product-detail-main container">
         {/* Image Gallery */}
         <div className="product-detail-gallery">
-          <div className="product-detail-main-image" style={gradientStyle}>
-            <span className="product-detail-placeholder">
-              {product.name.split(' ').slice(1, 3).map(w => w[0]).join('')}
-            </span>
+          <div className="product-detail-main-image" style={!product.image ? gradientStyle : {}}>
+            {product.image ? (
+              <img 
+                src={product.image} 
+                alt={product.name} 
+                style={{ width: '100%', height: '100%', objectFit: 'cover' }} 
+              />
+            ) : (
+              <span className="product-detail-placeholder">
+                {product.name.split(' ').slice(1, 3).map(w => w[0]).join('')}
+              </span>
+            )}
             {product.isNew && <span className="product-badge badge-new">New</span>}
           </div>
           {/* Thumbnail row */}
