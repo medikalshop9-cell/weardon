@@ -8,7 +8,7 @@ import './CartPage.css'; // Reuse CartPage styles for layout consistency
 export default function WishlistPage() {
   const dispatch = useDispatch();
   const navigate = useNavigate();
-  const wishlistItems = useSelector(state => state.wishlist?.items || []);
+  const wishlistItems = useSelector(state => state.wishlist?.items || []).filter(Boolean);
 
   if (wishlistItems.length === 0) {
     return (

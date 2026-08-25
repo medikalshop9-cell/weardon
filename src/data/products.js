@@ -226,5 +226,7 @@ export const heroBanners = [
 ];
 
 export const formatPrice = (price) => {
-  return `₵${price.toFixed(2)}`;
+  const num = parseFloat(price);
+  if (isNaN(num)) return '₵0.00';
+  return `₵${num.toFixed(2)}`;
 };

@@ -4,6 +4,7 @@ import { useDispatch } from 'react-redux';
 import { subscribeToProducts } from './store/productsSlice';
 import Navbar from './components/Navbar';
 import Footer from './components/Footer';
+import ErrorBoundary from './components/ErrorBoundary';
 import Home from './pages/Home';
 import ProductDetail from './pages/ProductDetail';
 import CartPage from './pages/CartPage';
@@ -44,21 +45,23 @@ function App() {
       <Navbar theme={theme} toggleTheme={toggleTheme} />
 
       <main className="main-content">
-        <Routes>
-          {/* Public Routes */}
-          <Route path="/" element={<Home />} />
-          <Route path="/product/:id" element={<ProductDetail />} />
-          <Route path="/cart" element={<CartPage />} />
-          <Route path="/wishlist" element={<WishlistPage />} />
+        <ErrorBoundary>
+          <Routes>
+            {/* Public Routes */}
+            <Route path="/" element={<Home />} />
+            <Route path="/product/:id" element={<ProductDetail />} />
+            <Route path="/cart" element={<CartPage />} />
+            <Route path="/wishlist" element={<WishlistPage />} />
 
-          {/* Admin Routes */}
-          <Route path="/admin" element={<AdminLayout />}>
-            <Route index element={<AdminDashboard />} />
-            <Route path="categories" element={<AdminCategories />} />
-            <Route path="products" element={<AdminProducts />} />
-            <Route path="banners" element={<AdminBanners />} />
-          </Route>
-        </Routes>
+            {/* Admin Routes */}
+            <Route path="/admin" element={<AdminLayout />}>
+              <Route index element={<AdminDashboard />} />
+              <Route path="categories" element={<AdminCategories />} />
+              <Route path="products" element={<AdminProducts />} />
+              <Route path="banners" element={<AdminBanners />} />
+            </Route>
+          </Routes>
+        </ErrorBoundary>
       </main>
 
       <Footer />
