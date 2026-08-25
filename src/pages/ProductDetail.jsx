@@ -171,7 +171,7 @@ function ProductDetail() {
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const { items } = useSelector(state => state.products);
-  const wishlistItems = useSelector(state => state.wishlist.items);
+  const wishlistItems = useSelector(state => state.wishlist?.items || []);
 
   // Support both string and number IDs (Firestore returns string IDs)
   const product = items.find(p => String(p.id) === String(id) || p.id === parseInt(id));

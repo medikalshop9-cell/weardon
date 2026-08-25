@@ -14,7 +14,7 @@ function Navbar({ theme, toggleTheme }) {
   const [userDropdownOpen, setUserDropdownOpen] = useState(false);
   const dispatch = useDispatch();
   const cartCount = useSelector(selectCartCount);
-  const wishlistItems = useSelector((state) => state.wishlist.items);
+  const wishlistItems = useSelector((state) => state.wishlist?.items || []);
   const { user, isAdmin } = useSelector((state) => state.auth);
   const location = useLocation();
   const navigate = useNavigate();
