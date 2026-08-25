@@ -7,6 +7,7 @@ import Footer from './components/Footer';
 import Home from './pages/Home';
 import ProductDetail from './pages/ProductDetail';
 import CartPage from './pages/CartPage';
+import WishlistPage from './pages/WishlistPage';
 
 // Admin Imports
 import AdminLayout from './pages/admin/AdminLayout';
@@ -48,6 +49,7 @@ function App() {
           <Route path="/" element={<Home />} />
           <Route path="/product/:id" element={<ProductDetail />} />
           <Route path="/cart" element={<CartPage />} />
+          <Route path="/wishlist" element={<WishlistPage />} />
 
           {/* Admin Routes */}
           <Route path="/admin" element={<AdminLayout />}>

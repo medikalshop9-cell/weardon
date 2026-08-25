@@ -7,6 +7,7 @@ import {
   FiInstagram, FiCopy, FiCheck
 } from 'react-icons/fi';
 import { addToCart } from '../store/cartSlice';
+import { toggleWishlist } from '../store/wishlistSlice';
 import { formatPrice } from '../data/products';
 import ProductCarousel from '../components/ProductCarousel';
 import './ProductDetail.css';
@@ -170,12 +171,13 @@ function ProductDetail() {
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const { items } = useSelector(state => state.products);
+  const wishlistItems = useSelector(state => state.wishlist.items);
 
   // Support both string and number IDs (Firestore returns string IDs)
   const product = items.find(p => String(p.id) === String(id) || p.id === parseInt(id));
 
   const [selectedSize, setSelectedSize] = useState(null);
-  const [liked, setLiked] = useState(false);
+  const liked = wishlistItems.some(item => String(item.id) === String(id));
   const [cartState, setCartState] = useState('idle'); // 'idle' | 'adding' | 'added'
   const [showShare, setShowShare] = useState(false);
   const [sizeError, setSizeError] = useState(false);
@@ -261,8 +263,8 @@ function ProductDetail() {
             <div className="pdp-info-actions">
               <button
                 className={`pdp-icon-btn ${liked ? 'liked' : ''}`}
-                onClick={() => setLiked(l => !l)}
-                aria-label="Add to wishlist"
+                onClick={() => dispatch(toggleWishlist(product))}
+                aria-label={liked ? "Remove from wishlist" : "Add to wishlist"}
                 id="pdp-wishlist-btn"
               >
                 <FiHeart size={18} fill={liked ? '#D22B2B' : 'none'} stroke={liked ? '#D22B2B' : 'currentColor'} />

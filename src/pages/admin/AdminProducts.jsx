@@ -168,7 +168,7 @@ export default function AdminProducts() {
       });
       setFormSuccess(`"${name}" added successfully!`);
       resetForm();
-      // No need to call loadData() — real-time listener handles it
+      await loadData(); // Reload to reflect changes immediately
       setTimeout(() => { setIsModalOpen(false); setFormSuccess(''); }, 1800);
     } catch (err) {
       console.error(err);
@@ -189,7 +189,7 @@ export default function AdminProducts() {
     if (!window.confirm(`Delete "${productName}"? This cannot be undone.`)) return;
     try {
       await deleteProduct(id);
-      // No need to reload — real-time listener handles it
+      await loadData(); // Reload to reflect changes immediately
     } catch (err) {
       setPageError(`Failed to delete "${productName}". Try again.`);
     }

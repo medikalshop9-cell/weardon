@@ -18,9 +18,17 @@ export const fetchProducts = createAsyncThunk(
  * Returns an unsubscribe function.
  */
 export const subscribeToProducts = (dispatch) => {
-  const q = query(collection(db, 'products'), orderBy('createdAt', 'desc'));
+  const q = query(collection(db, 'products')); // Removed orderBy to support old items
   const unsubscribe = onSnapshot(q, (snapshot) => {
-    const products = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+    // Sort client-side instead
+    const products = snapshot.docs
+      .map(doc => ({ id: doc.id, ...doc.data() }))
+      .sort((a, b) => {
+        const dateA = a.createdAt ? new Date(a.createdAt).getTime() : 0;
+        const dateB = b.createdAt ? new Date(b.createdAt).getTime() : 0;
+        return dateB - dateA;
+      });
+    
     dispatch(productsSlice.actions.setProducts(products));
   });
   return unsubscribe;

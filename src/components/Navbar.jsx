@@ -14,6 +14,7 @@ function Navbar({ theme, toggleTheme }) {
   const [userDropdownOpen, setUserDropdownOpen] = useState(false);
   const dispatch = useDispatch();
   const cartCount = useSelector(selectCartCount);
+  const wishlistItems = useSelector((state) => state.wishlist.items);
   const { user, isAdmin } = useSelector((state) => state.auth);
   const location = useLocation();
   const navigate = useNavigate();
@@ -104,8 +105,9 @@ function Navbar({ theme, toggleTheme }) {
             >
               <FiSearch size={20} />
             </button>
-            <Link to="/" className="navbar-action-btn" aria-label="Wishlist" id="wishlist-btn">
+            <Link to="/wishlist" className="navbar-action-btn cart-btn" aria-label="Wishlist" id="wishlist-btn">
               <FiHeart size={20} />
+              {wishlistItems.length > 0 && <span className="cart-badge">{wishlistItems.length}</span>}
             </Link>
             <Link
               to="/cart"
