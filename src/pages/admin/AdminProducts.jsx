@@ -314,9 +314,7 @@ export default function AdminProducts() {
                   <label>Category (Optional)</label>
                   <select value={category} onChange={e => setCategory(e.target.value)}>
                     <option value="">No Category</option>
-                    {categories.length === 0
-                      : categories.map(cat => <option key={cat.id} value={cat.id}>{cat.name}</option>)
-                    }
+                    {categories.map(cat => <option key={cat.id} value={cat.id}>{cat.name}</option>)}
                   </select>
                 </div>
                 <div className="admin-form-group">
