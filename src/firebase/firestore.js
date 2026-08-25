@@ -4,7 +4,8 @@ import {
   getDocs, 
   getDoc,
   doc, 
-  addDoc, 
+  addDoc,
+  setDoc, 
   updateDoc, 
   deleteDoc,
   query,
@@ -27,12 +28,16 @@ export const getVendors = async () => {
 export const getCategories = async () => {
   const q = query(collection(db, 'categories'), orderBy('name'));
   const querySnapshot = await getDocs(q);
-  return querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+  // Spread doc.data() first, then overwrite id with doc.id so real document ID is never masked
+  return querySnapshot.docs.map(doc => ({ ...doc.data(), id: doc.id }));
 };
 
 export const addCategory = async (categoryData) => {
-  return await addDoc(collection(db, 'categories'), {
-    ...categoryData,
+  // Use setDoc instead of addDoc to make the document ID the actual slug
+  const docRef = doc(db, 'categories', categoryData.id);
+  return await setDoc(docRef, {
+    name: categoryData.name,
+    image: categoryData.image,
     createdAt: new Date().toISOString()
   });
 };

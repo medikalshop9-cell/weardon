@@ -37,7 +37,8 @@ export const subscribeToProducts = (dispatch) => {
 export const subscribeToCategories = (dispatch) => {
   const q = query(collection(db, 'categories'));
   const unsubscribe = onSnapshot(q, (snapshot) => {
-    const categories = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+    // Spread doc.data() first, then overwrite id with doc.id so real document ID is never masked
+    const categories = snapshot.docs.map(doc => ({ ...doc.data(), id: doc.id }));
     dispatch(productsSlice.actions.setCategories(categories));
   });
   return unsubscribe;
