@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
-import { getProducts, addProduct, deleteProduct, getCategories } from '../../firebase/firestore';
+import { getProducts, addProduct, updateProduct, deleteProduct, getCategories } from '../../firebase/firestore';
 import { uploadImageToCloudinary } from '../../firebase/cloudinary';
-import { FiTrash2, FiPlus, FiImage, FiAlertCircle, FiCheckCircle, FiX, FiZap } from 'react-icons/fi';
+import { FiTrash2, FiPlus, FiImage, FiAlertCircle, FiCheckCircle, FiX, FiZap, FiEdit2 } from 'react-icons/fi';
 import './AdminForms.css';
 
 // Highlight suggestions for auto-assist
@@ -89,6 +89,8 @@ export default function AdminProducts() {
   const [categories, setCategories] = useState([]);
   const [loading, setLoading] = useState(true);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [editingId, setEditingId] = useState(null);
+  const [existingImageUrl, setExistingImageUrl] = useState(null);
 
   // Basic fields
   const [name, setName] = useState('');
@@ -147,12 +149,16 @@ export default function AdminProducts() {
     if (!name.trim()) { setFormError('Product name is required'); return; }
     if (!price || isNaN(parseFloat(price))) { setFormError('Valid price is required'); return; }
     if (!category) { setFormError('Category is required'); return; }
-    if (!imageFile) { setFormError('Please select a product image'); return; }
+    if (!imageFile && !existingImageUrl) { setFormError('Please select a product image'); return; }
 
     setSubmitting(true);
     try {
-      const imageUrl = await uploadImageToCloudinary(imageFile);
-      await addProduct({
+      let imageUrl = existingImageUrl;
+      if (imageFile) {
+        imageUrl = await uploadImageToCloudinary(imageFile);
+      }
+      
+      const productData = {
         name: name.trim(),
         description: description.trim(),
         price: parseFloat(price),
@@ -161,24 +167,52 @@ export default function AdminProducts() {
         trending: isTrending,
         isNew,
         sizes: sizes.split(',').map(s => parseInt(s.trim())).filter(s => !isNaN(s)),
-        soldCount: 0,
         highlights: highlights.split('\n').filter(Boolean),
         measurements: measurements.trim(),
         materials: materials.trim(),
-      });
-      setFormSuccess(`"${name}" added successfully!`);
+      };
+
+      if (editingId) {
+        await updateProduct(editingId, productData);
+        setFormSuccess(`"${name}" updated successfully!`);
+      } else {
+        await addProduct({ ...productData, soldCount: 0 });
+        setFormSuccess(`"${name}" added successfully!`);
+      }
+      
       resetForm();
-      await loadData(); // Reload to reflect changes immediately
+      await loadData();
       setTimeout(() => { setIsModalOpen(false); setFormSuccess(''); }, 1800);
     } catch (err) {
       console.error(err);
-      setFormError(err.message || 'Failed to add product. Please try again.');
+      setFormError(err.message || 'Failed to save product. Please try again.');
     } finally {
       setSubmitting(false);
     }
   };
 
+  const openEditModal = (prod) => {
+    setEditingId(prod.id);
+    setName(prod.name);
+    setDescription(prod.description || '');
+    setPrice(prod.price.toString());
+    setCategory(prod.category);
+    setExistingImageUrl(prod.image);
+    setImagePreview(prod.image);
+    setIsTrending(prod.trending || false);
+    setIsNew(prod.isNew || false);
+    setSizes((prod.sizes || []).join(', '));
+    setHighlights((prod.highlights || []).join('\n'));
+    setMeasurements(prod.measurements || '');
+    setMaterials(prod.materials || '');
+    setFormError('');
+    setFormSuccess('');
+    setIsModalOpen(true);
+  };
+
   const resetForm = () => {
+    setEditingId(null);
+    setExistingImageUrl(null);
     setName(''); setDescription(''); setPrice(''); setCategory(categories[0]?.id || '');
     setImageFile(null); setImagePreview(null); setIsTrending(false); setIsNew(true);
     setSizes(''); setHighlights(''); setMeasurements(''); setMaterials('');
@@ -230,9 +264,14 @@ export default function AdminProducts() {
                     {prod.trending && <span className="admin-tag tag-trending">🔥</span>}
                   </td>
                   <td>
-                    <button className="admin-icon-btn danger" onClick={() => handleDelete(prod.id, prod.name)} title="Delete">
-                      <FiTrash2 />
-                    </button>
+                    <div style={{ display: 'flex', gap: '8px' }}>
+                      <button className="admin-icon-btn" onClick={() => openEditModal(prod)} title="Edit" style={{ color: '#60a5fa' }}>
+                        <FiEdit2 />
+                      </button>
+                      <button className="admin-icon-btn danger" onClick={() => handleDelete(prod.id, prod.name)} title="Delete">
+                        <FiTrash2 />
+                      </button>
+                    </div>
                   </td>
                 </tr>
               ))}
@@ -249,7 +288,7 @@ export default function AdminProducts() {
         <div className="admin-modal-overlay" onClick={e => e.target === e.currentTarget && setIsModalOpen(false)}>
           <div className="admin-modal admin-modal-lg">
             <div className="admin-modal-header">
-              <h2>New Product</h2>
+              <h2>{editingId ? 'Edit Product' : 'New Product'}</h2>
               <button className="admin-modal-close" onClick={() => setIsModalOpen(false)}><FiX size={20} /></button>
             </div>
 
@@ -301,12 +340,12 @@ export default function AdminProducts() {
               {/* ── Image Upload ── */}
               <div className="admin-section-label">Product Image</div>
               <div className="admin-form-group">
-                <label>Upload Image * <span style={{ fontWeight: 400, color: 'var(--text-secondary)', fontSize: '0.75rem' }}>Max 10MB · JPG/PNG/WEBP</span></label>
+                <label>Product Image {!editingId && '*'} <span style={{ fontWeight: 400, color: 'var(--text-secondary)', fontSize: '0.75rem' }}>Max 10MB · JPG/PNG/WEBP</span></label>
                 <div className="admin-file-upload-area">
                   {imagePreview ? (
                     <div className="admin-img-preview-wrap">
                       <img src={imagePreview} alt="Preview" className="admin-img-preview" />
-                      <button type="button" className="admin-img-remove" onClick={() => { setImageFile(null); setImagePreview(null); }}>
+                      <button type="button" className="admin-img-remove" onClick={() => { setImageFile(null); setImagePreview(null); setExistingImageUrl(null); }}>
                         <FiX size={14} /> Remove
                       </button>
                     </div>
@@ -357,7 +396,7 @@ export default function AdminProducts() {
               <div className="admin-modal-actions">
                 <button type="button" className="admin-btn secondary" onClick={() => setIsModalOpen(false)} disabled={submitting}>Cancel</button>
                 <button type="submit" className="admin-btn primary" disabled={submitting}>
-                  {submitting ? <><span className="admin-btn-spinner" /> Uploading…</> : 'Save Product'}
+                  {submitting ? <><span className="admin-btn-spinner" /> Saving…</> : (editingId ? 'Update Product' : 'Save Product')}
                 </button>
               </div>
             </form>

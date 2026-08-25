@@ -23,6 +23,7 @@ const saveState = (state) => {
     const serializedState = JSON.stringify({
       cart: state.cart,
       wishlist: state.wishlist,
+      auth: state.auth,
     });
     localStorage.setItem('weardon_store', serializedState);
   } catch (err) {
@@ -47,6 +48,7 @@ store.subscribe(() => {
   saveState({
     cart: store.getState().cart,
     wishlist: store.getState().wishlist,
+    auth: store.getState().auth,
   });
 });
 
