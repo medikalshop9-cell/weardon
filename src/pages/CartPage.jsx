@@ -1,4 +1,5 @@
 import { useSelector, useDispatch } from 'react-redux';
+import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { FiTrash2, FiPlus, FiMinus, FiArrowLeft, FiShoppingBag } from 'react-icons/fi';
 import {
@@ -8,11 +9,13 @@ import {
   selectCartTotal
 } from '../store/cartSlice';
 import { formatPrice } from '../data/products';
+import CheckoutModal from '../components/CheckoutModal';
 import './CartPage.css';
 
 export default function CartPage() {
   const dispatch = useDispatch();
   const navigate = useNavigate();
+  const [isCheckoutModalOpen, setIsCheckoutModalOpen] = useState(false);
   const cartItems = useSelector(state => state.cart.items);
   const total = useSelector(selectCartTotal);
 
@@ -162,8 +165,8 @@ export default function CartPage() {
               </div>
             </div>
 
-            <button className="cart-checkout-btn" id="cart-checkout-btn">
-              Proceed to Checkout
+            <button className="cart-checkout-btn" id="cart-checkout-btn" onClick={() => setIsCheckoutModalOpen(true)}>
+              Place Your Order
             </button>
 
             <div className="cart-payment-methods">
@@ -184,6 +187,11 @@ export default function CartPage() {
           </div>
         </div>
       </div>
+      
+      <CheckoutModal 
+        isOpen={isCheckoutModalOpen} 
+        onClose={() => setIsCheckoutModalOpen(false)} 
+      />
     </div>
   );
 }
