@@ -112,7 +112,9 @@ function Home() {
             <span className="seasonal-tag">New Collection</span>
             <h2 className="seasonal-title">PACK LIKE A PRO</h2>
             <p className="seasonal-subtitle">Essential slippers for every occasion</p>
-            <button className="seasonal-cta">Shop Now</button>
+            <Link to="/?category=slides" className="seasonal-cta" style={{ textDecoration: 'none', display: 'inline-block' }}>
+              Shop Now
+            </Link>
           </div>
           <div className="seasonal-banner-visual">
             <div className="seasonal-visual-circle"></div>
