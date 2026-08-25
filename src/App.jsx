@@ -1,11 +1,12 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { Routes, Route } from 'react-router-dom';
 import { useDispatch } from 'react-redux';
-import { fetchProducts } from './store/productsSlice';
+import { subscribeToProducts } from './store/productsSlice';
 import Navbar from './components/Navbar';
 import Footer from './components/Footer';
 import Home from './pages/Home';
 import ProductDetail from './pages/ProductDetail';
+import CartPage from './pages/CartPage';
 
 // Admin Imports
 import AdminLayout from './pages/admin/AdminLayout';
@@ -27,13 +28,15 @@ function App() {
     localStorage.setItem('weardon-theme', theme);
   }, [theme]);
 
+  // Real-time Firestore listener — storefront auto-updates on any admin change
   useEffect(() => {
-    dispatch(fetchProducts());
+    const unsubscribe = subscribeToProducts(dispatch);
+    return () => unsubscribe(); // Cleanup on unmount
   }, [dispatch]);
 
-  const toggleTheme = () => {
+  const toggleTheme = useCallback(() => {
     setTheme(prev => (prev === 'light' ? 'dark' : 'light'));
-  };
+  }, []);
 
   return (
     <div className="app-container">
@@ -44,6 +47,7 @@ function App() {
           {/* Public Routes */}
           <Route path="/" element={<Home />} />
           <Route path="/product/:id" element={<ProductDetail />} />
+          <Route path="/cart" element={<CartPage />} />
 
           {/* Admin Routes */}
           <Route path="/admin" element={<AdminLayout />}>

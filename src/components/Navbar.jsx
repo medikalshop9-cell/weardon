@@ -107,15 +107,15 @@ function Navbar({ theme, toggleTheme }) {
             <Link to="/" className="navbar-action-btn" aria-label="Wishlist" id="wishlist-btn">
               <FiHeart size={20} />
             </Link>
-            <button
+            <Link
+              to="/cart"
               className="navbar-action-btn cart-btn"
-              onClick={() => dispatch(toggleCart())}
-              aria-label="Cart"
+              aria-label="View cart"
               id="cart-toggle-btn"
             >
               <FiShoppingBag size={20} />
               {cartCount > 0 && <span className="cart-badge">{cartCount}</span>}
-            </button>
+            </Link>
             
             <div style={{ position: 'relative' }}>
               <button 

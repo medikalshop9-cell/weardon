@@ -1,6 +1,9 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import { getProducts as fetchProductsFromFirestore } from '../firebase/firestore';
+import { collection, onSnapshot, query, orderBy } from 'firebase/firestore';
+import { db } from '../firebase/config';
 
+// One-time fetch (used on initial load)
 export const fetchProducts = createAsyncThunk(
   'products/fetchProducts',
   async () => {
@@ -8,6 +11,20 @@ export const fetchProducts = createAsyncThunk(
     return products;
   }
 );
+
+/**
+ * Subscribe to real-time Firestore product updates.
+ * Call this once in App.jsx — it dispatches setProducts on every change.
+ * Returns an unsubscribe function.
+ */
+export const subscribeToProducts = (dispatch) => {
+  const q = query(collection(db, 'products'), orderBy('createdAt', 'desc'));
+  const unsubscribe = onSnapshot(q, (snapshot) => {
+    const products = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+    dispatch(productsSlice.actions.setProducts(products));
+  });
+  return unsubscribe;
+};
 
 const productsSlice = createSlice({
   name: 'products',
@@ -21,6 +38,12 @@ const productsSlice = createSlice({
     error: null
   },
   reducers: {
+    // Used by the real-time Firestore listener
+    setProducts(state, action) {
+      state.status = 'succeeded';
+      state.items = action.payload;
+      state.filteredItems = applyFilters({ ...state, items: action.payload });
+    },
     setCategory(state, action) {
       state.activeCategory = action.payload;
       state.filteredItems = applyFilters(state);
@@ -90,5 +113,5 @@ function applyFilters(state) {
   return result;
 }
 
-export const { setCategory, setSearchQuery, setSortBy } = productsSlice.actions;
+export const { setProducts, setCategory, setSearchQuery, setSortBy } = productsSlice.actions;
 export default productsSlice.reducer;

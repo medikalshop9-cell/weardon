@@ -173,9 +173,119 @@
   border: 1px solid rgba(255, 255, 255, 0.1);
   border-radius: 8px;
   padding: 12px;
-  color: white;
+  color: var(--text-primary);
   font-family: inherit;
   font-size: 14px;
+}
+
+/* Fix dropdown option text in dark mode */
+.admin-form-group select option {
+  background: #1a1a1a;
+  color: #ffffff;
+}
+
+/* Section separator label */
+.admin-section-label {
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  color: var(--text-secondary);
+  margin-bottom: 16px;
+  margin-top: 24px;
+  padding-bottom: 8px;
+  border-bottom: 1px solid rgba(255,255,255,0.06);
+}
+
+/* Highlight builder */
+.admin-highlights-builder {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.admin-highlights-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  min-height: 32px;
+}
+
+.admin-highlight-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: rgba(139, 92, 246, 0.12);
+  border: 1px solid rgba(139, 92, 246, 0.25);
+  border-radius: 20px;
+  padding: 5px 12px;
+  font-size: 12px;
+  color: #c4b5fd;
+}
+
+.admin-highlight-chip button {
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: #c4b5fd;
+  display: flex;
+  align-items: center;
+  opacity: 0.7;
+  padding: 0;
+}
+.admin-highlight-chip button:hover { opacity: 1; }
+
+.admin-highlight-input-row {
+  display: flex;
+  gap: 8px;
+}
+
+.admin-highlight-input-row input {
+  flex: 1;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 8px;
+  padding: 10px 12px;
+  color: var(--text-primary);
+  font-size: 13px;
+  font-family: inherit;
+}
+.admin-highlight-input-row input:focus {
+  outline: none;
+  border-color: #8b5cf6;
+}
+
+.admin-highlight-suggestions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px;
+}
+
+.admin-suggest-label {
+  font-size: 11px;
+  color: var(--text-secondary);
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  flex-shrink: 0;
+}
+
+.admin-suggest-chip {
+  padding: 4px 10px;
+  background: rgba(255,255,255,0.04);
+  border: 1px solid rgba(255,255,255,0.1);
+  border-radius: 20px;
+  font-size: 11px;
+  color: var(--text-secondary);
+  cursor: pointer;
+  transition: all 0.15s;
+  font-family: inherit;
+}
+.admin-suggest-chip:hover {
+  background: rgba(139, 92, 246, 0.1);
+  border-color: rgba(139, 92, 246, 0.3);
+  color: #c4b5fd;
 }
 
 .admin-form-group input:focus,
