@@ -48,6 +48,8 @@ export default function UserDropdown({ isOpen, onClose }) {
     setLoading(true);
     setError('');
 
+    let authError = false;
+
     try {
       if (mode === 'signup') {
         const userCredential = await createUserWithEmailAndPassword(auth, email, password);
@@ -61,9 +63,12 @@ export default function UserDropdown({ isOpen, onClose }) {
           if (tokenResult.claims.admin) {
             dispatch(setUser(userCredential.user));
             dispatch(setAdmin(true));
+            // Navigate admin to dashboard after successful login
+            navigate('/admin');
           } else {
             await signOut(auth);
             setError('Access denied. Admin privileges required.');
+            authError = true;
           }
         } else {
           // Regular user login
@@ -73,12 +78,18 @@ export default function UserDropdown({ isOpen, onClose }) {
         }
       }
       
-      if (!error) {
+      if (!authError) {
         setEmail('');
         setPassword('');
+        onClose();
       }
     } catch (err) {
-      setError(err.message || 'Authentication failed.');
+      const msg = err.code === 'auth/invalid-credential' 
+        ? 'Invalid email or password.' 
+        : err.code === 'auth/email-already-in-use'
+        ? 'An account with this email already exists.'
+        : err.message || 'Authentication failed.';
+      setError(msg);
       console.error(err);
     } finally {
       setLoading(false);
