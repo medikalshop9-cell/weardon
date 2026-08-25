@@ -7,6 +7,8 @@ import { auth, db } from '../firebase/config';
 import { setUser, setAdmin } from '../store/authSlice';
 import { clearCart, selectCartTotal } from '../store/cartSlice';
 import { formatPrice } from '../data/products';
+import useRateLimit from '../hooks/useRateLimit';
+import { downloadOrderReceipt } from '../utils/pdfReceipt';
 import './CheckoutModal.css';
 
 export default function CheckoutModal({ isOpen, onClose }) {
@@ -18,6 +20,8 @@ export default function CheckoutModal({ isOpen, onClose }) {
   const DELIVERY_THRESHOLD = 500;
   const deliveryFee = total >= DELIVERY_THRESHOLD ? 0 : 30;
   const grandTotal = total + deliveryFee;
+
+  const rateLimit = useRateLimit(3000); // 3 second cooldown
 
   // View states: 'auth', 'delivery', 'success'
   const [view, setView] = useState('auth');
@@ -40,6 +44,7 @@ export default function CheckoutModal({ isOpen, onClose }) {
   const [deliveryLoading, setDeliveryLoading] = useState(false);
 
   // Order Result State
+  const [orderDataState, setOrderDataState] = useState(null);
   const [orderRef, setOrderRef] = useState('');
 
   // Reset modal state when opened/closed
@@ -53,6 +58,7 @@ export default function CheckoutModal({ isOpen, onClose }) {
       setAuthError('');
       setDeliveryData({ name: '', phone: '', address: '', city: '', notes: '' });
       setOrderRef('');
+      setOrderDataState(null);
     }
   }, [isOpen, user]);
 
@@ -61,8 +67,14 @@ export default function CheckoutModal({ isOpen, onClose }) {
   // ─── AUTHENTICATION HANDLER ─────────────────────────────────────────────
   const handleAuthSubmit = async (e) => {
     e.preventDefault();
-    setAuthError('');
-    setAuthLoading(true);
+    if (rateLimit.isLocked) {
+      setAuthError("Please wait a moment before trying again.");
+      return;
+    }
+
+    rateLimit.execute(async () => {
+      setAuthError('');
+      setAuthLoading(true);
 
     try {
       if (authMode === 'signup') {
@@ -86,12 +98,16 @@ export default function CheckoutModal({ isOpen, onClose }) {
     } finally {
       setAuthLoading(false);
     }
+    });
   };
 
   // ─── DELIVERY SUBMIT HANDLER ────────────────────────────────────────────
   const handleDeliverySubmit = async (e) => {
     e.preventDefault();
-    setDeliveryLoading(true);
+    if (rateLimit.isLocked) return;
+
+    rateLimit.execute(async () => {
+      setDeliveryLoading(true);
 
     // Generate a unique short order reference
     const timestampRef = Date.now().toString(36).toUpperCase().slice(-5);
@@ -112,16 +128,18 @@ export default function CheckoutModal({ isOpen, onClose }) {
         createdAt: serverTimestamp()
       };
 
-      await addDoc(collection(db, 'orders'), orderData);
-      
-      setOrderRef(generatedRef);
-      setView('success');
-    } catch (err) {
-      console.error("Error saving order:", err);
-      alert("There was an error generating your order. Please try again.");
-    } finally {
-      setDeliveryLoading(false);
-    }
+        await addDoc(collection(db, 'orders'), orderData);
+        
+        setOrderDataState(orderData);
+        setOrderRef(generatedRef);
+        setView('success');
+      } catch (err) {
+        console.error("Error saving order:", err);
+        alert("There was an error generating your order. Please try again.");
+      } finally {
+        setDeliveryLoading(false);
+      }
+    });
   };
 
   // ─── WHATSAPP INTEGRATION ───────────────────────────────────────────────
@@ -146,7 +164,9 @@ export default function CheckoutModal({ isOpen, onClose }) {
   };
 
   const handlePrint = () => {
-    window.print();
+    if (orderDataState) {
+      downloadOrderReceipt(orderDataState);
+    }
   };
 
   return (
@@ -301,7 +321,7 @@ export default function CheckoutModal({ isOpen, onClose }) {
                 <FiMessageCircle size={20} /> Complete Payment on WhatsApp
               </button>
               <button className="print-btn" onClick={handlePrint}>
-                <FiPrinter size={18} /> Print Order Details
+                <FiPrinter size={18} /> Download PDF Receipt
               </button>
             </div>
           </div>

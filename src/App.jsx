@@ -12,6 +12,7 @@ import WishlistPage from './pages/WishlistPage';
 import AboutPage from './pages/AboutPage';
 import HelpPage from './pages/HelpPage';
 import SellPage from './pages/SellPage';
+import OrdersPage from './pages/OrdersPage';
 
 // Admin Imports
 import AdminLayout from './pages/admin/AdminLayout';
@@ -19,6 +20,7 @@ import AdminDashboard from './pages/admin/AdminDashboard';
 import AdminCategories from './pages/admin/AdminCategories';
 import AdminProducts from './pages/admin/AdminProducts';
 import AdminBanners from './pages/admin/AdminBanners';
+import AdminOrders from './pages/admin/AdminOrders';
 
 import './App.css';
 
@@ -58,6 +60,7 @@ function App() {
             <Route path="/product/:id" element={<ProductDetail />} />
             <Route path="/cart" element={<CartPage />} />
             <Route path="/wishlist" element={<WishlistPage />} />
+            <Route path="/orders" element={<OrdersPage />} />
 
             {/* Admin Routes */}
             <Route path="/admin" element={<AdminLayout />}>
@@ -65,6 +68,7 @@ function App() {
               <Route path="categories" element={<AdminCategories />} />
               <Route path="products" element={<AdminProducts />} />
               <Route path="banners" element={<AdminBanners />} />
+              <Route path="orders" element={<AdminOrders />} />
             </Route>
           </Routes>
         </ErrorBoundary>
