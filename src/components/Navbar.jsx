@@ -177,6 +177,7 @@ function Navbar({ theme, toggleTheme }) {
       <div className="navbar-categories">
         <div className="navbar-categories-scroll">
           <SpotlightNavbar
+            key={spotlightItems.length}
             items={spotlightItems}
             defaultActiveIndex={activeIndex}
             onItemClick={(item) => navigate(item.href)}
