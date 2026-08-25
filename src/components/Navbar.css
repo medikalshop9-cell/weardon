@@ -180,6 +180,18 @@
   display: none;
 }
 
+.navbar-categories-scroll {
+  display: flex;
+  padding: 8px 16px;
+  min-width: min-content;
+}
+
+@media (min-width: 768px) {
+  .navbar-categories-scroll {
+    justify-content: center;
+  }
+}
+
 .navbar-categories-inner {
   display: flex;
   gap: 4px;

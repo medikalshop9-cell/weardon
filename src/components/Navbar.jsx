@@ -159,7 +159,7 @@ function Navbar({ theme, toggleTheme }) {
 
       {/* Category Nav */}
       <div className="navbar-categories">
-        <div className="container" style={{ padding: '8px 0', display: 'flex', justifyContent: 'center' }}>
+        <div className="navbar-categories-scroll">
           <SpotlightNavbar
             items={spotlightItems}
             defaultActiveIndex={activeIndex}
