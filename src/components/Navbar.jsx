@@ -50,9 +50,9 @@ function Navbar({ theme, toggleTheme }) {
         <div className="navbar-top-inner container">
           <span className="navbar-promo">Free delivery on orders over ₵500 🇬🇭</span>
           <div className="navbar-top-links">
-            <a href="#about">About</a>
-            <a href="#help">Help</a>
-            <a href="#sell">Sell</a>
+            <Link to="/about">About</Link>
+            <Link to="/help">Help</Link>
+            <Link to="/sell">Sell</Link>
           </div>
         </div>
       </div>

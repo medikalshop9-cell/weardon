@@ -54,10 +54,10 @@ function Footer() {
         <div className="footer-col">
           <h4 className="footer-col-title">Company</h4>
           <ul className="footer-links">
-            <li><a href="#about">About Us</a></li>
-            <li><a href="#careers">Careers</a></li>
-            <li><a href="#press">Press</a></li>
-            <li><a href="#sustainability">Sustainability</a></li>
+            <li><Link to="/about">About Us</Link></li>
+            <li><Link to="/about#careers">Careers</Link></li>
+            <li><Link to="/about#press">Press</Link></li>
+            <li><Link to="/about#sustainability">Sustainability</Link></li>
           </ul>
         </div>
 
@@ -65,10 +65,10 @@ function Footer() {
         <div className="footer-col">
           <h4 className="footer-col-title">Help</h4>
           <ul className="footer-links">
-            <li><a href="#delivery">Delivery Info</a></li>
-            <li><a href="#returns">Returns</a></li>
-            <li><a href="#sizing">Size Guide</a></li>
-            <li><a href="#faq">FAQ</a></li>
+            <li><Link to="/help#delivery">Delivery Info</Link></li>
+            <li><Link to="/help#returns">Returns</Link></li>
+            <li><Link to="/help#sizing">Size Guide</Link></li>
+            <li><Link to="/help#faq">FAQ</Link></li>
           </ul>
         </div>
 

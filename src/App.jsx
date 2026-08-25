@@ -9,6 +9,9 @@ import Home from './pages/Home';
 import ProductDetail from './pages/ProductDetail';
 import CartPage from './pages/CartPage';
 import WishlistPage from './pages/WishlistPage';
+import AboutPage from './pages/AboutPage';
+import HelpPage from './pages/HelpPage';
+import SellPage from './pages/SellPage';
 
 // Admin Imports
 import AdminLayout from './pages/admin/AdminLayout';
@@ -49,6 +52,9 @@ function App() {
           <Routes>
             {/* Public Routes */}
             <Route path="/" element={<Home />} />
+            <Route path="/about" element={<AboutPage />} />
+            <Route path="/help" element={<HelpPage />} />
+            <Route path="/sell" element={<SellPage />} />
             <Route path="/product/:id" element={<ProductDetail />} />
             <Route path="/cart" element={<CartPage />} />
             <Route path="/wishlist" element={<WishlistPage />} />

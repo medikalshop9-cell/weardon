@@ -1,0 +1,137 @@
+.about-page {
+  padding-bottom: 4rem;
+}
+
+.about-hero {
+  background: var(--bg-secondary, #121212);
+  padding: 6rem 0;
+  text-align: center;
+  border-bottom: 1px solid var(--border-color, #333);
+}
+
+.about-hero-morph {
+  color: var(--primary-color, #e0a96d);
+}
+
+.about-story {
+  padding: 6rem 0;
+}
+
+.about-story-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 3rem;
+  align-items: center;
+}
+
+@media (min-width: 768px) {
+  .about-story-grid {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+.about-story-text h2 {
+  font-size: 2.5rem;
+  margin-bottom: 1.5rem;
+  color: var(--text-primary);
+}
+
+.about-story-text p {
+  color: var(--text-secondary);
+  line-height: 1.8;
+  margin-bottom: 1.5rem;
+  font-size: 1.1rem;
+}
+
+.about-glitch-text {
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: var(--primary-color, #e0a96d);
+  margin-top: 1rem;
+  cursor: pointer;
+  user-select: none;
+  transition: color 0.2s ease;
+}
+
+.about-story-image-wrap {
+  position: relative;
+  width: 100%;
+  padding-bottom: 100%;
+  border-radius: 12px;
+  overflow: hidden;
+  background: var(--bg-secondary);
+  border: 1px solid var(--border-color);
+}
+
+.about-story-image {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  z-index: 2;
+}
+
+.about-image-placeholder {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 8rem;
+  font-weight: 700;
+  color: var(--border-color);
+  opacity: 0.5;
+  z-index: 1;
+}
+
+.about-values {
+  background: var(--bg-secondary);
+  padding: 5rem 0;
+  border-top: 1px solid var(--border-color);
+}
+
+.about-values h2 {
+  font-size: 2.5rem;
+  margin-bottom: 3rem;
+  color: var(--text-primary);
+}
+
+.values-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 2rem;
+}
+
+.value-card {
+  background: var(--bg-primary);
+  padding: 2rem;
+  border-radius: 12px;
+  border: 1px solid var(--border-color);
+  text-align: center;
+  transition: transform 0.3s ease;
+}
+
+.value-card:hover {
+  transform: translateY(-5px);
+}
+
+.value-icon {
+  color: var(--primary-color);
+  margin-bottom: 1.5rem;
+}
+
+.value-card h3 {
+  font-size: 1.25rem;
+  margin-bottom: 1rem;
+  color: var(--text-primary);
+}
+
+.value-card p {
+  color: var(--text-secondary);
+  line-height: 1.6;
+}

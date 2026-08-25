@@ -1,4 +1,4 @@
-import { useSelector, useDispatch } from 'react';
+import { useSelector, useDispatch } from 'react-redux';
 import { Link, useNavigate } from 'react-router-dom';
 import { FiTrash2, FiArrowLeft, FiHeart } from 'react-icons/fi';
 import { toggleWishlist, clearWishlist } from '../store/wishlistSlice';

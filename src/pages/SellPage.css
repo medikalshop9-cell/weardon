@@ -1,0 +1,228 @@
+.sell-page {
+  padding-bottom: 5rem;
+}
+
+.sell-hero {
+  background: linear-gradient(rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.7)), url('/assets/images/brand/weardon-story.jpg') center/cover;
+  padding: 8rem 0;
+  text-align: center;
+  color: #fff;
+}
+
+.sell-hero-inner {
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+.sell-hero h1 {
+  font-size: 3rem;
+  margin-bottom: 1.5rem;
+  color: #fff;
+}
+
+.sell-hero p {
+  font-size: 1.25rem;
+  line-height: 1.6;
+  opacity: 0.9;
+}
+
+.sell-benefits {
+  padding: 5rem 0;
+}
+
+.sell-benefits h2 {
+  font-size: 2.5rem;
+  margin-bottom: 3rem;
+  color: var(--text-primary);
+}
+
+.benefits-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 2.5rem;
+}
+
+.benefit-card {
+  background: var(--bg-secondary);
+  border: 1px solid var(--border-color);
+  border-radius: 12px;
+  padding: 3rem 2rem;
+  text-align: center;
+  transition: transform 0.3s ease;
+}
+
+.benefit-card:hover {
+  transform: translateY(-5px);
+  border-color: var(--primary-color);
+}
+
+.benefit-icon {
+  color: var(--primary-color);
+  margin-bottom: 1.5rem;
+}
+
+.benefit-card h3 {
+  font-size: 1.5rem;
+  margin-bottom: 1rem;
+  color: var(--text-primary);
+}
+
+.benefit-card p {
+  color: var(--text-secondary);
+  line-height: 1.6;
+}
+
+.sell-application {
+  padding: 5rem 0;
+  background: var(--bg-secondary);
+  border-top: 1px solid var(--border-color);
+}
+
+.application-wrapper {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 4rem;
+}
+
+@media (min-width: 992px) {
+  .application-wrapper {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+.application-text h2 {
+  font-size: 2.5rem;
+  margin-bottom: 1.5rem;
+  color: var(--text-primary);
+}
+
+.application-text p {
+  color: var(--text-secondary);
+  font-size: 1.1rem;
+  line-height: 1.7;
+  margin-bottom: 2rem;
+}
+
+.application-requirements {
+  list-style: none;
+  padding: 0;
+}
+
+.application-requirements li {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: 1rem;
+  color: var(--text-primary);
+  font-size: 1.1rem;
+}
+
+.req-icon {
+  color: var(--primary-color);
+}
+
+.application-form-container {
+  background: var(--bg-primary);
+  padding: 2.5rem;
+  border-radius: 12px;
+  border: 1px solid var(--border-color);
+}
+
+.application-form .form-row {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1.5rem;
+}
+
+@media (min-width: 768px) {
+  .application-form .form-row {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+.application-form .form-group {
+  margin-bottom: 1.5rem;
+}
+
+.application-form label {
+  display: block;
+  margin-bottom: 0.5rem;
+  color: var(--text-primary);
+  font-weight: 500;
+}
+
+.application-form input,
+.application-form select,
+.application-form textarea {
+  width: 100%;
+  padding: 0.8rem 1rem;
+  background: var(--bg-secondary);
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  color: var(--text-primary);
+  font-family: inherit;
+  font-size: 1rem;
+  transition: border-color 0.3s;
+}
+
+.application-form input:focus,
+.application-form select:focus,
+.application-form textarea:focus {
+  outline: none;
+  border-color: var(--primary-color);
+}
+
+.sell-submit-btn {
+  width: 100%;
+  padding: 1rem;
+  background: var(--primary-color);
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  font-size: 1.1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.3s ease;
+  margin-top: 1rem;
+}
+
+.sell-submit-btn:hover {
+  background: #c28b4c;
+}
+
+.application-success {
+  text-align: center;
+  padding: 3rem 1rem;
+}
+
+.success-icon {
+  color: #22c55e;
+  margin-bottom: 1.5rem;
+}
+
+.application-success h3 {
+  font-size: 2rem;
+  margin-bottom: 1rem;
+  color: var(--text-primary);
+}
+
+.application-success p {
+  color: var(--text-secondary);
+  line-height: 1.6;
+  margin-bottom: 2rem;
+}
+
+.sell-btn {
+  padding: 0.8rem 2rem;
+  background: var(--bg-secondary);
+  color: var(--text-primary);
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.sell-btn:hover {
+  background: var(--border-color);
+}
