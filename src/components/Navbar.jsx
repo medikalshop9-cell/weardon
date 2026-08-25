@@ -16,6 +16,7 @@ function Navbar({ theme, toggleTheme }) {
   const cartCount = useSelector(selectCartCount);
   const wishlistItems = useSelector((state) => state.wishlist?.items || []);
   const { user, isAdmin } = useSelector((state) => state.auth);
+  const { categories } = useSelector((state) => state.products);
   const location = useLocation();
   const navigate = useNavigate();
 
@@ -26,15 +27,20 @@ function Navbar({ theme, toggleTheme }) {
     }
   };
 
-  const navLinks = [
+  // Base links
+  const baseLinks = [
     { label: 'All', to: '/' },
     { label: 'Trending', to: '/?filter=trending' },
     { label: 'New', to: '/?filter=new' },
-    { label: 'Slides', to: '/?category=slides' },
-    { label: 'Sandals', to: '/?category=sandals' },
-    { label: 'Flip-Flops', to: '/?category=flip-flops' },
-    { label: 'Luxury', to: '/?category=luxury' },
   ];
+
+  // Dynamic category links
+  const categoryLinks = categories.map(cat => ({
+    label: cat.name,
+    to: `/?category=${cat.id}`
+  }));
+
+  const navLinks = [...baseLinks, ...categoryLinks];
 
   const spotlightItems = navLinks.map(link => ({
     label: link.label,

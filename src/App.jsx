@@ -1,7 +1,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import { Routes, Route, Navigate } from 'react-router-dom';
 import { useDispatch } from 'react-redux';
-import { subscribeToProducts } from './store/productsSlice';
+import { subscribeToProducts, subscribeToCategories } from './store/productsSlice';
 import Navbar from './components/Navbar';
 import Footer from './components/Footer';
 import ErrorBoundary from './components/ErrorBoundary';
@@ -42,8 +42,12 @@ function App() {
 
   // Real-time Firestore listener — storefront auto-updates on any admin change
   useEffect(() => {
-    const unsubscribe = subscribeToProducts(dispatch);
-    return () => unsubscribe(); // Cleanup on unmount
+    const unsubProducts = subscribeToProducts(dispatch);
+    const unsubCategories = subscribeToCategories(dispatch);
+    return () => {
+      unsubProducts();
+      unsubCategories();
+    };
   }, [dispatch]);
 
   const toggleTheme = useCallback(() => {

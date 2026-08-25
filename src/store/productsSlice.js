@@ -34,11 +34,21 @@ export const subscribeToProducts = (dispatch) => {
   return unsubscribe;
 };
 
+export const subscribeToCategories = (dispatch) => {
+  const q = query(collection(db, 'categories'));
+  const unsubscribe = onSnapshot(q, (snapshot) => {
+    const categories = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+    dispatch(productsSlice.actions.setCategories(categories));
+  });
+  return unsubscribe;
+};
+
 const productsSlice = createSlice({
   name: 'products',
   initialState: {
     items: [],
     filteredItems: [],
+    categories: [],
     activeCategory: 'all',
     searchQuery: '',
     sortBy: 'default',
@@ -51,6 +61,9 @@ const productsSlice = createSlice({
       state.status = 'succeeded';
       state.items = action.payload;
       state.filteredItems = applyFilters({ ...state, items: action.payload });
+    },
+    setCategories(state, action) {
+      state.categories = action.payload;
     },
     setCategory(state, action) {
       state.activeCategory = action.payload;
@@ -121,5 +134,5 @@ function applyFilters(state) {
   return result;
 }
 
-export const { setProducts, setCategory, setSearchQuery, setSortBy } = productsSlice.actions;
+export const { setProducts, setCategories, setCategory, setSearchQuery, setSortBy } = productsSlice.actions;
 export default productsSlice.reducer;
