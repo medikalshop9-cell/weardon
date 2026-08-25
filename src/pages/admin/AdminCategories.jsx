@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
-import { getCategories, addCategory, deleteCategory } from '../../firebase/firestore';
+import { getCategories, addCategory, deleteCategory, updateCategory } from '../../firebase/firestore';
 import { uploadImageToCloudinary } from '../../firebase/cloudinary';
-import { FiTrash2, FiPlus, FiImage, FiX } from 'react-icons/fi';
+import { FiTrash2, FiPlus, FiImage, FiX, FiEdit2 } from 'react-icons/fi';
 import './AdminForms.css';
 
 export default function AdminCategories() {
@@ -14,6 +14,7 @@ export default function AdminCategories() {
   const [imageFile, setImageFile] = useState(null);
   const [imagePreview, setImagePreview] = useState(null);
   const [submitting, setSubmitting] = useState(false);
+  const [editingId, setEditingId] = useState(null);
 
   useEffect(() => {
     loadCategories();
@@ -46,28 +47,56 @@ export default function AdminCategories() {
     
     setSubmitting(true);
     try {
-      let imageUrl = '';
+      let imageUrl = imagePreview && !imageFile ? imagePreview : ''; // Keep existing image if no new file
       if (imageFile) {
         imageUrl = await uploadImageToCloudinary(imageFile);
       }
 
-      await addCategory({ 
-        name,
-        image: imageUrl,
-        // Make the id slug-like for URLs
-        id: name.toLowerCase().replace(/[^a-z0-9]+/g, '-') 
-      });
-      setIsModalOpen(false);
-      setName('');
-      setImageFile(null);
-      setImagePreview(null);
+      if (editingId) {
+        await updateCategory(editingId, {
+          name,
+          image: imageUrl
+        });
+      } else {
+        await addCategory({ 
+          name,
+          image: imageUrl,
+          id: name.toLowerCase().replace(/[^a-z0-9]+/g, '-') 
+        });
+      }
+
+      closeModal();
       loadCategories(); // reload
     } catch (err) {
       console.error(err);
-      alert('Failed to add category');
+      alert('Failed to save category');
     } finally {
       setSubmitting(false);
     }
+  };
+
+  const openAddModal = () => {
+    setEditingId(null);
+    setName('');
+    setImageFile(null);
+    setImagePreview(null);
+    setIsModalOpen(true);
+  };
+
+  const openEditModal = (cat) => {
+    setEditingId(cat.id);
+    setName(cat.name);
+    setImageFile(null);
+    setImagePreview(cat.image || null);
+    setIsModalOpen(true);
+  };
+
+  const closeModal = () => {
+    setIsModalOpen(false);
+    setEditingId(null);
+    setName('');
+    setImageFile(null);
+    setImagePreview(null);
   };
 
   const handleDelete = async (id) => {
@@ -85,7 +114,7 @@ export default function AdminCategories() {
     <div className="admin-page">
       <div className="admin-page-header">
         <h1>Categories</h1>
-        <button className="admin-btn primary" onClick={() => setIsModalOpen(true)}>
+        <button className="admin-btn primary" onClick={openAddModal}>
           <FiPlus /> Add Category
         </button>
       </div>
@@ -117,6 +146,14 @@ export default function AdminCategories() {
                   <td style={{ color: 'var(--text-secondary)' }}>{cat.id}</td>
                   <td>
                     <button 
+                      className="admin-icon-btn" 
+                      onClick={() => openEditModal(cat)}
+                      title="Edit"
+                      style={{ marginRight: '8px' }}
+                    >
+                      <FiEdit2 />
+                    </button>
+                    <button 
                       className="admin-icon-btn danger" 
                       onClick={() => handleDelete(cat.id)}
                       title="Delete"
@@ -142,7 +179,7 @@ export default function AdminCategories() {
       {isModalOpen && (
         <div className="admin-modal-overlay">
           <div className="admin-modal">
-            <h2>New Category</h2>
+            <h2>{editingId ? 'Edit Category' : 'New Category'}</h2>
             <form onSubmit={handleSubmit}>
               <div className="admin-form-group">
                 <label>Category Name</label>
@@ -179,7 +216,7 @@ export default function AdminCategories() {
                 <button 
                   type="button" 
                   className="admin-btn secondary" 
-                  onClick={() => setIsModalOpen(false)}
+                  onClick={closeModal}
                 >
                   Cancel
                 </button>
