@@ -43,6 +43,11 @@ function ProductCard({ product }) {
 
       <Link to={`/product/${product.id}`} className="product-card-info">
         <h3 className="product-card-name">{product.name}</h3>
+        {product.vendorId && (
+          <p className="product-card-vendor" style={{ fontSize: '0.75rem', color: 'var(--text-secondary)', marginBottom: '4px' }}>
+            Sold by <strong>{product.vendorName}</strong>
+          </p>
+        )}
         <p className="product-card-price-label">Lowest Ask</p>
         <p className="product-card-price">{formatPrice(product.price)}</p>
         {product.soldCount && (

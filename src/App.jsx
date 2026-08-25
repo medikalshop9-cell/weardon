@@ -1,10 +1,11 @@
 import { useState, useEffect, useCallback } from 'react';
-import { Routes, Route } from 'react-router-dom';
+import { Routes, Route, Navigate } from 'react-router-dom';
 import { useDispatch } from 'react-redux';
 import { subscribeToProducts } from './store/productsSlice';
 import Navbar from './components/Navbar';
 import Footer from './components/Footer';
 import ErrorBoundary from './components/ErrorBoundary';
+import UserTour from './components/UserTour';
 import Home from './pages/Home';
 import ProductDetail from './pages/ProductDetail';
 import CartPage from './pages/CartPage';
@@ -14,6 +15,8 @@ import HelpPage from './pages/HelpPage';
 import SellPage from './pages/SellPage';
 import OrdersPage from './pages/OrdersPage';
 import ProfilePage from './pages/ProfilePage';
+import ShopList from './pages/ShopList';
+import VendorShop from './pages/VendorShop';
 
 // Admin Imports
 import AdminLayout from './pages/admin/AdminLayout';
@@ -22,6 +25,7 @@ import AdminCategories from './pages/admin/AdminCategories';
 import AdminProducts from './pages/admin/AdminProducts';
 import AdminBanners from './pages/admin/AdminBanners';
 import AdminOrders from './pages/admin/AdminOrders';
+import AdminVendors from './pages/admin/AdminVendors';
 
 import './App.css';
 
@@ -51,6 +55,7 @@ function App() {
       <Navbar theme={theme} toggleTheme={toggleTheme} />
 
       <main className="main-content">
+        <UserTour />
         <ErrorBoundary>
           <Routes>
             {/* Public Routes */}
@@ -63,6 +68,8 @@ function App() {
             <Route path="/wishlist" element={<WishlistPage />} />
             <Route path="/orders" element={<OrdersPage />} />
             <Route path="/profile" element={<ProfilePage />} />
+            <Route path="/shops" element={<ShopList />} />
+            <Route path="/shop/:vendorId" element={<VendorShop />} />
 
             {/* Admin Routes */}
             <Route path="/admin" element={<AdminLayout />}>
@@ -71,6 +78,7 @@ function App() {
               <Route path="products" element={<AdminProducts />} />
               <Route path="banners" element={<AdminBanners />} />
               <Route path="orders" element={<AdminOrders />} />
+              <Route path="vendors" element={<AdminVendors />} />
             </Route>
           </Routes>
         </ErrorBoundary>

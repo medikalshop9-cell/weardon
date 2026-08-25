@@ -21,6 +21,9 @@ function Navbar({ theme, toggleTheme }) {
 
   const handleSearch = (e) => {
     dispatch(setSearchQuery(e.target.value));
+    if (e.target.value && location.pathname !== '/') {
+      navigate('/');
+    }
   };
 
   const navLinks = [

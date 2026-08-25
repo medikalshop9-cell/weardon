@@ -1,6 +1,6 @@
 import { Navigate, Outlet, NavLink } from 'react-router-dom';
 import { useSelector } from 'react-redux';
-import { FiGrid, FiList, FiBox, FiPackage } from 'react-icons/fi';
+import { FiGrid, FiList, FiBox, FiPackage, FiUsers } from 'react-icons/fi';
 import './AdminLayout.css';
 
 export default function AdminLayout() {
@@ -51,6 +51,12 @@ export default function AdminLayout() {
             className={({ isActive }) => `admin-nav-item ${isActive ? 'active' : ''}`}
           >
             <FiPackage className="admin-icon" /> Orders
+          </NavLink>
+          <NavLink 
+            to="/admin/vendors" 
+            className={({ isActive }) => `admin-nav-item ${isActive ? 'active' : ''}`}
+          >
+            <FiUsers className="admin-icon" /> Vendors
           </NavLink>
         </nav>
       </aside>

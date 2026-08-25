@@ -8,8 +8,18 @@ import {
   updateDoc, 
   deleteDoc,
   query,
-  orderBy
+  orderBy,
+  where
 } from 'firebase/firestore';
+
+// ========================
+// USERS / VENDORS
+// ========================
+export const getVendors = async () => {
+  const q = query(collection(db, 'users'), where('role', '==', 'vendor'));
+  const querySnapshot = await getDocs(q);
+  return querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+};
 
 // ========================
 // CATEGORIES
@@ -46,6 +56,18 @@ export const deleteCategory = async (id) => {
 // ========================
 export const getProducts = async () => {
   const q = query(collection(db, 'products'));
+  const querySnapshot = await getDocs(q);
+  return querySnapshot.docs
+    .map(doc => ({ id: doc.id, ...doc.data() }))
+    .sort((a, b) => {
+      const dateA = a.createdAt ? new Date(a.createdAt).getTime() : 0;
+      const dateB = b.createdAt ? new Date(b.createdAt).getTime() : 0;
+      return dateB - dateA;
+    });
+};
+
+export const getVendorProducts = async (vendorId) => {
+  const q = query(collection(db, 'products'), where('vendorId', '==', vendorId));
   const querySnapshot = await getDocs(q);
   return querySnapshot.docs
     .map(doc => ({ id: doc.id, ...doc.data() }))

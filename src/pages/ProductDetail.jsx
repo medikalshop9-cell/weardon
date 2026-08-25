@@ -4,7 +4,7 @@ import { useSelector, useDispatch } from 'react-redux';
 import {
   FiArrowLeft, FiHeart, FiShare2, FiTruck, FiShield,
   FiRefreshCw, FiChevronDown, FiChevronLeft, FiChevronRight,
-  FiInstagram, FiCopy, FiCheck
+  FiInstagram, FiCopy, FiCheck, FiMessageCircle
 } from 'react-icons/fi';
 import { addToCart } from '../store/cartSlice';
 import { toggleWishlist } from '../store/wishlistSlice';
@@ -235,6 +235,21 @@ function ProductDetail() {
     ? product.category.charAt(0).toUpperCase() + product.category.slice(1)
     : 'Weardon';
 
+  const isVendorProduct = !!product.vendorId;
+
+  const handleWhatsAppChat = () => {
+    if (!selectedSize) {
+      setSizeError(true);
+      setTimeout(() => setSizeError(false), 2000);
+      return;
+    }
+    
+    // Clean the whatsapp number (remove spaces, +, etc)
+    const phone = (product.vendorWhatsApp || '').replace(/\D/g, '');
+    const message = `Hi ${product.vendorName}, I'm interested in buying your product listed on Weardon:%0A%0A*${product.name}*%0ASize: ${selectedSize}%0APrice: ₵${product.price}%0A%0AIs it still available?`;
+    window.open(`https://wa.me/${phone}?text=${message}`, '_blank');
+  };
+
   return (
     <div className="pdp" id="product-detail-page">
       {/* ── Breadcrumb ── */}
@@ -259,7 +274,13 @@ function ProductDetail() {
         <div className="pdp-info" id="pdp-info">
           {/* Brand + actions row */}
           <div className="pdp-info-top">
-            <span className="pdp-brand">Weardon</span>
+            <span className="pdp-brand">
+              {isVendorProduct ? (
+                <><span style={{ color: 'var(--text-secondary)' }}>Sold by:</span> <strong>{product.vendorName}</strong></>
+              ) : (
+                'Weardon Official'
+              )}
+            </span>
             <div className="pdp-info-actions">
               <button
                 className={`pdp-icon-btn ${liked ? 'liked' : ''}`}
@@ -327,23 +348,35 @@ function ProductDetail() {
 
           {/* CTAs */}
           <div className="pdp-cta" id="pdp-cta">
-            <button
-              className={`pdp-add-to-bag ${cartState}`}
-              onClick={handleAddToCart}
-              disabled={cartState === 'adding'}
-              id="pdp-add-to-bag-btn"
-            >
-              {cartState === 'idle' && (selectedSize ? `Add to Bag — ${formatPrice(product.price)}` : 'Add to Bag')}
-              {cartState === 'adding' && <span className="pdp-btn-spinner" />}
-              {cartState === 'added' && <><FiCheck size={16} /> Added to Bag!</>}
-            </button>
-            <button
-              className="pdp-buy-now"
-              onClick={handleBuyNow}
-              id="pdp-buy-now-btn"
-            >
-              Buy Now
-            </button>
+            {isVendorProduct ? (
+              <button
+                className="pdp-add-to-bag"
+                style={{ background: '#25D366', color: '#fff', border: 'none' }}
+                onClick={handleWhatsAppChat}
+              >
+                <FiMessageCircle size={18} /> Chat with Seller on WhatsApp
+              </button>
+            ) : (
+              <>
+                <button
+                  className={`pdp-add-to-bag ${cartState}`}
+                  onClick={handleAddToCart}
+                  disabled={cartState === 'adding'}
+                  id="pdp-add-to-bag-btn"
+                >
+                  {cartState === 'idle' && (selectedSize ? `Add to Bag — ${formatPrice(product.price)}` : 'Add to Bag')}
+                  {cartState === 'adding' && <span className="pdp-btn-spinner" />}
+                  {cartState === 'added' && <><FiCheck size={16} /> Added to Bag!</>}
+                </button>
+                <button
+                  className="pdp-buy-now"
+                  onClick={handleBuyNow}
+                  id="pdp-buy-now-btn"
+                >
+                  Buy Now
+                </button>
+              </>
+            )}
           </div>
 
           {/* Trust signals */}

@@ -2,8 +2,9 @@ import { useState, useRef, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import { signInWithEmailAndPassword, createUserWithEmailAndPassword, signOut } from 'firebase/auth';
-import { auth } from '../firebase/config';
-import { setUser, setAdmin, clearAuth } from '../store/authSlice';
+import { doc, getDoc, setDoc } from 'firebase/firestore';
+import { auth, db } from '../firebase/config';
+import { setUser, setAdmin, setVendor, clearAuth } from '../store/authSlice';
 import './UserDropdown.css';
 
 export default function UserDropdown({ isOpen, onClose }) {
@@ -16,7 +17,7 @@ export default function UserDropdown({ isOpen, onClose }) {
   
   const navigate = useNavigate();
   const dispatch = useDispatch();
-  const { user, isAdmin } = useSelector((state) => state.auth);
+  const { user, isAdmin, isVendor } = useSelector((state) => state.auth);
 
   // Close when clicking outside
   useEffect(() => {
@@ -53,16 +54,32 @@ export default function UserDropdown({ isOpen, onClose }) {
     try {
       if (mode === 'signup') {
         const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+        
+        // Initialize user document in Firestore
+        await setDoc(doc(db, 'users', userCredential.user.uid), {
+          email: userCredential.user.email,
+          role: 'customer'
+        });
+
         dispatch(setUser(userCredential.user));
         dispatch(setAdmin(false));
+        dispatch(setVendor(false));
       } else if (mode === 'login' || mode === 'admin') {
         const userCredential = await signInWithEmailAndPassword(auth, email, password);
         const tokenResult = await userCredential.user.getIdTokenResult();
+        
+        // Fetch user data from Firestore to check vendor status
+        const userDocRef = doc(db, 'users', userCredential.user.uid);
+        const userDoc = await getDoc(userDocRef);
+        const userData = userDoc.exists() ? userDoc.data() : null;
+        
+        const isUserVendor = userData?.role === 'vendor';
         
         if (mode === 'admin') {
           if (tokenResult.claims.admin) {
             dispatch(setUser(userCredential.user));
             dispatch(setAdmin(true));
+            dispatch(setVendor(isUserVendor));
             // Navigate admin to dashboard after successful login
             navigate('/admin');
           } else {
@@ -75,6 +92,7 @@ export default function UserDropdown({ isOpen, onClose }) {
           dispatch(setUser(userCredential.user));
           // Check if they happen to be an admin anyway
           dispatch(setAdmin(!!tokenResult.claims.admin));
+          dispatch(setVendor(isUserVendor));
         }
       }
       
@@ -110,7 +128,7 @@ export default function UserDropdown({ isOpen, onClose }) {
   const renderLoggedInState = () => (
     <div className="user-dropdown-content">
       <div className="user-info">
-        <span>{isAdmin ? 'Admin Logged In' : 'Welcome!'}</span>
+        <span>{isAdmin ? 'Admin Logged In' : isVendor ? 'Vendor Logged In' : 'Welcome!'}</span>
         <small>{user.email}</small>
       </div>
       
@@ -125,6 +143,9 @@ export default function UserDropdown({ isOpen, onClose }) {
       {!isAdmin && (
         <>
           <button className="user-nav-btn" onClick={() => { navigate('/orders'); onClose(); }}>My Orders</button>
+          {isVendor && (
+            <button className="user-nav-btn" onClick={() => { navigate('/sell'); onClose(); }} style={{ color: '#00B159' }}>Vendor Dashboard</button>
+          )}
           <button className="user-nav-btn" onClick={() => { navigate('/profile'); onClose(); }}>Profile</button>
         </>
       )}

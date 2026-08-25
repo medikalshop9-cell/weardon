@@ -1,8 +1,11 @@
 import { useState, useEffect } from 'react';
-import { getProducts, addProduct, updateProduct, deleteProduct, getCategories } from '../../firebase/firestore';
+import { getVendorProducts, addProduct, updateProduct, deleteProduct, getCategories } from '../../firebase/firestore';
 import { uploadImageToCloudinary } from '../../firebase/cloudinary';
+import { useSelector } from 'react-redux';
+import { doc, getDoc } from 'firebase/firestore';
+import { db } from '../../firebase/config';
 import { FiTrash2, FiPlus, FiImage, FiAlertCircle, FiCheckCircle, FiX, FiZap, FiEdit2 } from 'react-icons/fi';
-import './AdminForms.css';
+import '../admin/AdminForms.css';
 
 // Highlight suggestions for auto-assist
 const HIGHLIGHT_SUGGESTIONS = [
@@ -84,7 +87,8 @@ function HighlightBuilder({ value, onChange }) {
   );
 }
 
-export default function AdminProducts() {
+export default function VendorProducts() {
+  const { user } = useSelector(state => state.auth);
   const [products, setProducts] = useState([]);
   const [categories, setCategories] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -119,7 +123,7 @@ export default function AdminProducts() {
     setLoading(true);
     setPageError('');
     try {
-      const [prodData, catData] = await Promise.all([getProducts(), getCategories()]);
+      const [prodData, catData] = await Promise.all([getVendorProducts(user.uid), getCategories()]);
       setProducts(prodData);
       setCategories(catData);
       if (catData.length > 0) setCategory(catData[0].id);
@@ -157,6 +161,10 @@ export default function AdminProducts() {
         imageUrl = await uploadImageToCloudinary(imageFile);
       }
       
+      // Fetch vendor details
+      const userDoc = await getDoc(doc(db, 'users', user.uid));
+      const vendorData = userDoc.exists() ? userDoc.data() : {};
+      
       const productData = {
         name: name.trim(),
         description: description.trim(),
@@ -169,6 +177,9 @@ export default function AdminProducts() {
         highlights: highlights.split('\n').filter(Boolean),
         measurements: measurements.trim(),
         materials: materials.trim(),
+        vendorId: user.uid,
+        vendorName: vendorData.brandName || user.displayName || 'Vendor',
+        vendorWhatsApp: vendorData.whatsapp || ''
       };
 
       if (editingId) {
