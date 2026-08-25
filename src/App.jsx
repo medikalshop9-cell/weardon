@@ -13,6 +13,7 @@ import AboutPage from './pages/AboutPage';
 import HelpPage from './pages/HelpPage';
 import SellPage from './pages/SellPage';
 import OrdersPage from './pages/OrdersPage';
+import ProfilePage from './pages/ProfilePage';
 
 // Admin Imports
 import AdminLayout from './pages/admin/AdminLayout';
@@ -61,6 +62,7 @@ function App() {
             <Route path="/cart" element={<CartPage />} />
             <Route path="/wishlist" element={<WishlistPage />} />
             <Route path="/orders" element={<OrdersPage />} />
+            <Route path="/profile" element={<ProfilePage />} />
 
             {/* Admin Routes */}
             <Route path="/admin" element={<AdminLayout />}>

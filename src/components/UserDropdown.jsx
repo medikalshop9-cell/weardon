@@ -125,7 +125,7 @@ export default function UserDropdown({ isOpen, onClose }) {
       {!isAdmin && (
         <>
           <button className="user-nav-btn" onClick={() => { navigate('/orders'); onClose(); }}>My Orders</button>
-          <button className="user-nav-btn" onClick={() => { onClose(); }}>Profile</button>
+          <button className="user-nav-btn" onClick={() => { navigate('/profile'); onClose(); }}>Profile</button>
         </>
       )}
 
