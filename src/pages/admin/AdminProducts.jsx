@@ -1,25 +1,44 @@
 import { useState, useEffect } from 'react';
 import { getProducts, addProduct, deleteProduct, getCategories } from '../../firebase/firestore';
-import { uploadImageToCloudinary } from '../../firebase/cloudinary';
-import { FiTrash2, FiPlus, FiImage } from 'react-icons/fi';
+import { uploadImageToCloudinary, getCloudinaryInfo } from '../../firebase/cloudinary';
+import { FiTrash2, FiPlus, FiImage, FiAlertCircle, FiCheckCircle, FiX } from 'react-icons/fi';
 import './AdminForms.css';
+
+// ── Inline notification banner ──────────────────────────────────────────────
+function Alert({ type, message, onClose }) {
+  if (!message) return null;
+  return (
+    <div className={`admin-alert admin-alert--${type}`}>
+      {type === 'error' ? <FiAlertCircle size={16} /> : <FiCheckCircle size={16} />}
+      <span style={{ whiteSpace: 'pre-line' }}>{message}</span>
+      {onClose && <button className="admin-alert-close" onClick={onClose}><FiX size={14} /></button>}
+    </div>
+  );
+}
 
 export default function AdminProducts() {
   const [products, setProducts] = useState([]);
   const [categories, setCategories] = useState([]);
   const [loading, setLoading] = useState(true);
   const [isModalOpen, setIsModalOpen] = useState(false);
-  
+
   // Form State
   const [name, setName] = useState('');
   const [description, setDescription] = useState('');
   const [price, setPrice] = useState('');
   const [category, setCategory] = useState('');
   const [imageFile, setImageFile] = useState(null);
+  const [imagePreview, setImagePreview] = useState(null);
   const [isTrending, setIsTrending] = useState(false);
   const [isNew, setIsNew] = useState(true);
   const [sizes, setSizes] = useState('');
   const [submitting, setSubmitting] = useState(false);
+  const [formError, setFormError] = useState('');
+  const [formSuccess, setFormSuccess] = useState('');
+  const [pageError, setPageError] = useState('');
+
+  // Cloudinary config info (for debugging)
+  const cloudInfo = getCloudinaryInfo();
 
   useEffect(() => {
     loadData();
@@ -27,6 +46,7 @@ export default function AdminProducts() {
 
   const loadData = async () => {
     setLoading(true);
+    setPageError('');
     try {
       const [prodData, catData] = await Promise.all([
         getProducts(),
@@ -39,50 +59,78 @@ export default function AdminProducts() {
       }
     } catch (err) {
       console.error(err);
+      setPageError('Failed to load data. Check your Firestore connection.');
     } finally {
       setLoading(false);
     }
   };
 
   const handleFileChange = (e) => {
-    if (e.target.files[0]) {
-      setImageFile(e.target.files[0]);
+    const file = e.target.files[0];
+    if (!file) return;
+
+    // Client-side validation before hitting Cloudinary
+    if (!file.type.startsWith('image/')) {
+      setFormError('Only image files are allowed (JPG, PNG, WEBP, etc.)');
+      return;
     }
+    if (file.size > 10 * 1024 * 1024) {
+      setFormError('Image must be smaller than 10MB');
+      return;
+    }
+
+    setImageFile(file);
+    setFormError('');
+    // Show preview
+    const reader = new FileReader();
+    reader.onload = (ev) => setImagePreview(ev.target.result);
+    reader.readAsDataURL(file);
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (!name || !price || !category) return;
-    if (!imageFile) {
-      alert("Please select an image");
-      return;
-    }
-    
+    setFormError('');
+    setFormSuccess('');
+
+    if (!name.trim()) { setFormError('Product name is required'); return; }
+    if (!price || isNaN(parseFloat(price))) { setFormError('Valid price is required'); return; }
+    if (!category) { setFormError('Category is required'); return; }
+    if (!imageFile) { setFormError('Please select a product image'); return; }
+
     setSubmitting(true);
     try {
-      // 1. Upload image directly to Cloudinary
+      // 1. Upload to Cloudinary
       const imageUrl = await uploadImageToCloudinary(imageFile);
 
-      // 2. Save product to Firestore
-      await addProduct({ 
-        name,
-        description,
+      // 2. Save to Firestore
+      await addProduct({
+        name: name.trim(),
+        description: description.trim(),
         price: parseFloat(price),
         category,
         image: imageUrl,
         trending: isTrending,
         isNew,
-        sizes: sizes.split(',').map(s => parseInt(s.trim())).filter(s => !isNaN(s)),
+        sizes: sizes
+          .split(',')
+          .map(s => parseInt(s.trim()))
+          .filter(s => !isNaN(s)),
         soldCount: 0
       });
-      
-      // 3. Reset and close
-      setIsModalOpen(false);
+
+      setFormSuccess(`"${name}" added successfully!`);
       resetForm();
       loadData();
+
+      // Auto-close modal after success
+      setTimeout(() => {
+        setIsModalOpen(false);
+        setFormSuccess('');
+      }, 1800);
+
     } catch (err) {
-      console.error(err);
-      alert('Failed to add product: ' + err.message);
+      console.error('Product upload error:', err);
+      setFormError(err.message || 'Failed to add product. Please try again.');
     } finally {
       setSubmitting(false);
     }
@@ -93,33 +141,57 @@ export default function AdminProducts() {
     setDescription('');
     setPrice('');
     setImageFile(null);
+    setImagePreview(null);
     setIsTrending(false);
     setIsNew(true);
     setSizes('');
+    setFormError('');
+    setFormSuccess('');
   };
 
-  const handleDelete = async (id) => {
-    if (!window.confirm('Are you sure you want to delete this product?')) return;
+  const handleDelete = async (id, productName) => {
+    if (!window.confirm(`Delete "${productName}"? This cannot be undone.`)) return;
     try {
       await deleteProduct(id);
       loadData();
     } catch (err) {
       console.error(err);
-      alert('Failed to delete');
+      setPageError(`Failed to delete "${productName}". Try again.`);
     }
+  };
+
+  const handleOpenModal = () => {
+    resetForm();
+    setIsModalOpen(true);
   };
 
   return (
     <div className="admin-page">
       <div className="admin-page-header">
         <h1>Products</h1>
-        <button className="admin-btn primary" onClick={() => setIsModalOpen(true)}>
+        <button className="admin-btn primary" onClick={handleOpenModal}>
           <FiPlus /> Add Product
         </button>
       </div>
 
+      {/* Cloudinary config status banner */}
+      {(!cloudInfo.cloudName || cloudInfo.cloudName === '(not set)' ||
+        !cloudInfo.uploadPreset || cloudInfo.uploadPreset === '(not set)') && (
+        <Alert
+          type="error"
+          message={
+            `Cloudinary is not configured. Set VITE_CLOUDINARY_CLOUD_NAME and VITE_CLOUDINARY_UPLOAD_PRESET in your .env file, then restart the dev server.`
+          }
+        />
+      )}
+
+      {pageError && <Alert type="error" message={pageError} onClose={() => setPageError('')} />}
+
       {loading ? (
-        <p>Loading...</p>
+        <div className="admin-loading">
+          <div className="admin-spinner" />
+          <p>Loading products...</p>
+        </div>
       ) : (
         <div className="admin-table-container">
           <table className="admin-table">
@@ -129,6 +201,7 @@ export default function AdminProducts() {
                 <th>Name</th>
                 <th>Price</th>
                 <th>Category</th>
+                <th>Tags</th>
                 <th>Actions</th>
               </tr>
             </thead>
@@ -136,16 +209,25 @@ export default function AdminProducts() {
               {products.map(prod => (
                 <tr key={prod.id}>
                   <td>
-                    <img src={prod.image} alt={prod.name} className="admin-table-img" />
+                    <img
+                      src={prod.image}
+                      alt={prod.name}
+                      className="admin-table-img"
+                      onError={e => { e.target.style.display = 'none'; }}
+                    />
                   </td>
-                  <td>{prod.name}</td>
-                  <td>₵{prod.price.toFixed(2)}</td>
-                  <td>{prod.category}</td>
+                  <td><strong>{prod.name}</strong></td>
+                  <td>₵{parseFloat(prod.price).toFixed(2)}</td>
+                  <td style={{ textTransform: 'capitalize' }}>{prod.category}</td>
                   <td>
-                    <button 
-                      className="admin-icon-btn danger" 
-                      onClick={() => handleDelete(prod.id)}
-                      title="Delete"
+                    {prod.isNew && <span className="admin-tag tag-new">New</span>}
+                    {prod.trending && <span className="admin-tag tag-trending">🔥</span>}
+                  </td>
+                  <td>
+                    <button
+                      className="admin-icon-btn danger"
+                      onClick={() => handleDelete(prod.id, prod.name)}
+                      title="Delete product"
                     >
                       <FiTrash2 />
                     </button>
@@ -154,8 +236,8 @@ export default function AdminProducts() {
               ))}
               {products.length === 0 && (
                 <tr>
-                  <td colSpan="5" style={{ textAlign: 'center', padding: '32px' }}>
-                    No products found.
+                  <td colSpan="6" style={{ textAlign: 'center', padding: '48px', color: 'var(--text-secondary)' }}>
+                    No products yet. Add your first product!
                   </td>
                 </tr>
               )}
@@ -164,72 +246,156 @@ export default function AdminProducts() {
         </div>
       )}
 
-      {/* Modal */}
+      {/* ── Modal ── */}
       {isModalOpen && (
-        <div className="admin-modal-overlay">
+        <div className="admin-modal-overlay" onClick={e => e.target === e.currentTarget && setIsModalOpen(false)}>
           <div className="admin-modal admin-modal-lg">
-            <h2>New Product</h2>
-            <form onSubmit={handleSubmit}>
-              
+            <div className="admin-modal-header">
+              <h2>New Product</h2>
+              <button className="admin-modal-close" onClick={() => setIsModalOpen(false)}>
+                <FiX size={20} />
+              </button>
+            </div>
+
+            {/* Cloudinary config info for admin debugging */}
+            <div className="admin-config-info">
+              <span>Cloudinary:</span>
+              <code>{cloudInfo.cloudName}</code>
+              <span>Preset:</span>
+              <code>{cloudInfo.uploadPreset}</code>
+            </div>
+
+            {formError && <Alert type="error" message={formError} onClose={() => setFormError('')} />}
+            {formSuccess && <Alert type="success" message={formSuccess} />}
+
+            <form onSubmit={handleSubmit} noValidate>
               <div className="admin-form-row">
                 <div className="admin-form-group">
-                  <label>Product Name</label>
-                  <input type="text" value={name} onChange={e => setName(e.target.value)} required />
+                  <label>Product Name *</label>
+                  <input
+                    type="text"
+                    value={name}
+                    onChange={e => setName(e.target.value)}
+                    placeholder="e.g. Classic Slide Pro"
+                    required
+                  />
                 </div>
                 <div className="admin-form-group">
-                  <label>Price (₵)</label>
-                  <input type="number" step="0.01" value={price} onChange={e => setPrice(e.target.value)} required />
+                  <label>Price (₵) *</label>
+                  <input
+                    type="number"
+                    step="0.01"
+                    min="0"
+                    value={price}
+                    onChange={e => setPrice(e.target.value)}
+                    placeholder="e.g. 150.00"
+                    required
+                  />
                 </div>
               </div>
 
               <div className="admin-form-group">
-                <label>Description</label>
-                <textarea value={description} onChange={e => setDescription(e.target.value)} rows="3" required />
+                <label>Description *</label>
+                <textarea
+                  value={description}
+                  onChange={e => setDescription(e.target.value)}
+                  rows="3"
+                  placeholder="Describe the product..."
+                  required
+                />
               </div>
 
               <div className="admin-form-row">
                 <div className="admin-form-group">
-                  <label>Category</label>
+                  <label>Category *</label>
                   <select value={category} onChange={e => setCategory(e.target.value)} required>
-                    {categories.length === 0 && <option value="">No categories exist</option>}
-                    {categories.map(cat => (
-                      <option key={cat.id} value={cat.id}>{cat.name}</option>
-                    ))}
+                    {categories.length === 0
+                      ? <option value="">No categories — add one first</option>
+                      : categories.map(cat => (
+                          <option key={cat.id} value={cat.id}>{cat.name}</option>
+                        ))
+                    }
                   </select>
                 </div>
                 <div className="admin-form-group">
                   <label>Sizes (comma separated)</label>
-                  <input type="text" value={sizes} onChange={e => setSizes(e.target.value)} placeholder="e.g. 38, 39, 40" />
+                  <input
+                    type="text"
+                    value={sizes}
+                    onChange={e => setSizes(e.target.value)}
+                    placeholder="e.g. 38, 39, 40, 41, 42"
+                  />
                 </div>
               </div>
 
+              {/* Image upload with preview */}
               <div className="admin-form-group">
-                <label>Product Image</label>
-                <div className="admin-file-input">
-                  <input type="file" accept="image/*" onChange={handleFileChange} id="file-upload" required />
-                  <label htmlFor="file-upload" className="admin-btn secondary">
-                    <FiImage /> {imageFile ? imageFile.name : 'Choose Image'}
-                  </label>
+                <label>Product Image * <span style={{ fontWeight: 400, color: 'var(--text-secondary)', fontSize: '0.75rem' }}>Max 10MB, JPG/PNG/WEBP</span></label>
+                <div className="admin-file-upload-area">
+                  {imagePreview ? (
+                    <div className="admin-img-preview-wrap">
+                      <img src={imagePreview} alt="Preview" className="admin-img-preview" />
+                      <button
+                        type="button"
+                        className="admin-img-remove"
+                        onClick={() => { setImageFile(null); setImagePreview(null); }}
+                      >
+                        <FiX size={14} /> Remove
+                      </button>
+                    </div>
+                  ) : (
+                    <label htmlFor="file-upload" className="admin-file-drop-zone">
+                      <FiImage size={28} />
+                      <span>Click to choose image</span>
+                      <small>or drag and drop</small>
+                    </label>
+                  )}
+                  <input
+                    type="file"
+                    accept="image/*"
+                    onChange={handleFileChange}
+                    id="file-upload"
+                    style={{ display: 'none' }}
+                  />
                 </div>
               </div>
 
               <div className="admin-form-row">
                 <div className="admin-checkbox">
-                  <input type="checkbox" id="isNew" checked={isNew} onChange={e => setIsNew(e.target.checked)} />
-                  <label htmlFor="isNew">Mark as New</label>
+                  <input
+                    type="checkbox"
+                    id="isNew"
+                    checked={isNew}
+                    onChange={e => setIsNew(e.target.checked)}
+                  />
+                  <label htmlFor="isNew">Mark as New Arrival</label>
                 </div>
                 <div className="admin-checkbox">
-                  <input type="checkbox" id="isTrending" checked={isTrending} onChange={e => setIsTrending(e.target.checked)} />
+                  <input
+                    type="checkbox"
+                    id="isTrending"
+                    checked={isTrending}
+                    onChange={e => setIsTrending(e.target.checked)}
+                  />
                   <label htmlFor="isTrending">Mark as Trending</label>
                 </div>
               </div>
 
               <div className="admin-modal-actions">
-                <button type="button" className="admin-btn secondary" onClick={() => setIsModalOpen(false)}>
+                <button
+                  type="button"
+                  className="admin-btn secondary"
+                  onClick={() => setIsModalOpen(false)}
+                  disabled={submitting}
+                >
                   Cancel
                 </button>
                 <button type="submit" className="admin-btn primary" disabled={submitting}>
-                  {submitting ? 'Uploading & Saving...' : 'Save Product'}
+                  {submitting ? (
+                    <><span className="admin-btn-spinner" /> Uploading...</>
+                  ) : (
+                    'Save Product'
+                  )}
                 </button>
               </div>
             </form>
