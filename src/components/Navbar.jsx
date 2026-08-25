@@ -38,6 +38,13 @@ function Navbar({ theme, toggleTheme }) {
     href: link.to
   }));
 
+  const quickActionLinks = [
+    { label: 'My Order History', to: '/orders', icon: <FiShoppingBag className="mobile-link-icon" /> },
+    { label: 'Help / FAQs', to: '/help', icon: <FiSearch className="mobile-link-icon" /> },
+    { label: 'Sell on Weardon', to: '/sell', icon: <FiUser className="mobile-link-icon" /> },
+    { label: 'About', to: '/about', icon: <FiHeart className="mobile-link-icon" /> },
+  ];
+
   const currentPath = location.pathname + location.search;
   const activeIndex = Math.max(0, spotlightItems.findIndex(item => item.href === currentPath));
 
@@ -171,13 +178,15 @@ function Navbar({ theme, toggleTheme }) {
       {/* Mobile Menu Drawer */}
       <div className={`navbar-mobile-menu ${mobileMenuOpen ? 'open' : ''}`}>
         <div className="navbar-mobile-menu-inner">
-          {navLinks.map(link => (
+          <h3 className="mobile-menu-title">Quick Actions</h3>
+          {quickActionLinks.map(link => (
             <Link
               key={link.label}
               to={link.to}
               className="navbar-mobile-link"
               onClick={() => setMobileMenuOpen(false)}
             >
+              {link.icon}
               {link.label}
             </Link>
           ))}
